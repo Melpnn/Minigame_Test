@@ -9,6 +9,7 @@ from weapon import weapon
 from critters import critters
 from pygame.locals import * 
 
+
 if __name__=="__main__":
     pygame.init()
     screen = pygame.display.set_mode((600,343))
