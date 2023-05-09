@@ -1,4 +1,5 @@
 from drawunit import drawunit
+from arrows import arrows
 
 class weapon(drawunit):
     def __init__(self,x,y,width,height):
@@ -23,7 +24,7 @@ class weapon(drawunit):
             self.weapontype = bow 
         else:
             self.weapontype = sword
-    def frameupdate(self,slimeposition):
+    def frameupdate(self,slimeposition,arrowslist):
         self.x = slimeposition[0] + self.swordoffsetx
         self.y = slimeposition[1] + self.swordoffsety
         if self.weapontype == "swordpic" and self.swingstate:
@@ -38,3 +39,5 @@ class weapon(drawunit):
             if self.swordoffsetx <= 50:
                 self.swordoffsetx = 60
                 self.swingstate = False
+                arrow=arrows(self.x,self.y,50,50)
+                arrowslist.append(arrow)

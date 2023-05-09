@@ -152,7 +152,10 @@ if __name__=="__main__":
 
 
             maincharacter.frameupdate()  
-            sword.frameupdate(maincharacter.getposition())
+            for arrows in arrowslist:
+                arrows.frameupdate()
+                #TODO: make a system to delete arrows out of frame
+            sword.frameupdate(maincharacter.getposition(),arrowslist)
 
             if backgroundtimer > 2:
                 backgroundx-=1
@@ -176,6 +179,8 @@ if __name__=="__main__":
                 screen.blit(pictures["heart"],(10+30*x,10))
             for x in range(maincharacter.getiframe()):
                 screen.blit(pictures["shield"],maincharacter.getposition())
+            for arrows in arrowslist:
+                screen.blit(pictures["arrowpic"],arrows.getposition())
             for enemy in enemylist:
                 screen.blit(pictures["snakepic"],enemy.getposition())
             for ability in powerupslist:
