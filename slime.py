@@ -1,8 +1,8 @@
 from drawunit import drawunit
 
 class slime(drawunit):
-    def __init__(self,x,y,width,height,health):
-        drawunit.__init__(self,x,y,width,height)
+    def __init__(self,x,y,width,height,classtype,health):
+        drawunit.__init__(self,x,y,width,height,classtype)
         self.health = health
         self.jumpstate = False
         self.jumpframe = 0

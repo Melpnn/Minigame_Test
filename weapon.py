@@ -2,8 +2,8 @@ from drawunit import drawunit
 from arrows import arrows
 
 class weapon(drawunit):
-    def __init__(self,x,y,width,height):
-        drawunit.__init__(self,x,y,width,height)
+    def __init__(self,x,y,width,height,classtype):
+        drawunit.__init__(self,x,y,width,height,classtype)
         self.swingstate = False
         self.swingframe = 0
         self.swordoffsetx = 60
@@ -39,5 +39,5 @@ class weapon(drawunit):
             if self.swordoffsetx <= 50:
                 self.swordoffsetx = 60
                 self.swingstate = False
-                arrow=arrows(self.x,self.y,50,50)
+                arrow=arrows(self.x,self.y,50,50,"arrow")
                 arrowslist.append(arrow)

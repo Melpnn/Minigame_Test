@@ -1,9 +1,15 @@
 class drawunit:
-    def __init__(self,x,y,width,height):
+    def __init__(self,x,y,width,height,classtype):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.classtype = classtype
+    def offscreen(self):
+        if self.x > 615 or self.getrightx() < 0:
+            return True
+        else:
+            return False
     def getx(self):
         return self.x
     def getrightx(self):
@@ -24,6 +30,8 @@ class drawunit:
         self.x = self.x+amount
     def changey(self,amount):
         self.y = self.y+amount
+    def frameupdate(self):
+        return None
     def checkcollision(self,objectbody):
         objectrightx = objectbody[0] + objectbody[2] 
         if self.x < objectbody[0] and self.getrightx() > objectbody[0]:

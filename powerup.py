@@ -1,9 +1,12 @@
 from drawunit import drawunit
 
 class powerup(drawunit):
-    def __init__(self,x,y,width,height,timer):
-        drawunit.__init__(self,x,y,width,height)
+    def __init__(self,x,y,width,height,classtype,timer):
+        drawunit.__init__(self,x,y,width,height,classtype)
         self.timer = timer
     def checktimer(self):
-        self.timer = self.timer-1
         return self.timer
+    def frameupdate(self):
+        self.timer-=1
+        if self.timer <= 0:
+            self.x = 650

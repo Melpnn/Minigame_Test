@@ -22,13 +22,13 @@ if __name__=="__main__":
         "slimepic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
         "swordpic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
         "bowpic" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
-        "arrowpic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow.png")),(50,50)),
-        "snakepic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
+        "arrow" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow.png")),(50,50)),
+        "enemy" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
         "gameoverpic" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
-        "spritesheet" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
+        "critter" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
         "background" :  pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
         "heart" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
-        "jumpboost" :   pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
+        "powerup" :   pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
         "shield" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
     }
 
@@ -40,16 +40,13 @@ if __name__=="__main__":
     spacepress = False
     weaponswap = False
     jumpframecount = 0 
-    maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,4)
-    sword=weapon(0,0,50,50)
-    enemylist=[]
-    critterlist=[]
-    powerupslist=[]
-    arrowslist=[]
+    maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,"slime",4,)
+    sword=weapon(0,0,50,50,"weapon")
+    objectrenderlist=[]
     spawntimer=0
     spawncounter=random.randint(120,300)
-    crittertimer=0
     critterspawncounter=random.randint(180,420)
+    crittertimer=0
     backgroundtimer=0
     backgroundx = 0
     background2x = 600
@@ -90,43 +87,34 @@ if __name__=="__main__":
         #LOGIC:
 
         if maincharacter.gethealth() > 0:
-            deadenemies=[]
-            deadcritters=[]
-            timedoutpowerups=[]
+            objectdeletelist=[]
             if rArrow_keypress:
                 maincharacter.changex(1)
             if lArrow_keypress:
                 maincharacter.changex(-1)
             if spawntimer==spawncounter:
-                snake=snakeenemy(600,193,70,70,1)
-                enemylist.append(snake)
+                snake=snakeenemy(600,193,70,70,"enemy",1)
+                objectrenderlist.append(snake)
                 spawntimer=0
                 spawncounter=random.randint(120,300)
             if crittertimer==critterspawncounter:
-                bunny=critters(0,GROUNDLEVEL-31,31,31,[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
-                critterlist.append(bunny)
+                bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
+                objectrenderlist.append(bunny)
                 crittertimer=0
                 critterspawncounter=random.randint(180,420)
-            for critter in critterlist:
-                if critter.getx() > 615:
-                    deadcritters.append(critter)
-            for enemy in enemylist:
-                enemy.changex(-1)
-                if enemy.getx() < -150:
-                    deadenemies.append(enemy)
-                if enemy.checkcollision(sword.getobjectbody()) and sword.getswingstate():
-                    deadenemies.append(enemy)
-                if enemy.checkcollision(maincharacter.getobjectbody()) and maincharacter.getiframe() == 0:
-                    maincharacter.losehealth()
-            for bunny in critterlist:
-                bunny.changex(1)
-                bunny.frameupdate()
-            for power in powerupslist:
-                if power.checktimer() <= 0:
-                    timedoutpowerups.append(power)
-                if power.checkcollision(maincharacter.getobjectbody()):
-                    timedoutpowerups.append(power)
-                    maincharacter.setjumppower()
+            for objectrender in objectrenderlist:
+                if objectrender.offscreen():
+                    objectdeletelist.append(objectrender)
+                objectrender.frameupdate()
+                if objectrender.classtype == "enemy":
+                    if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
+                        objectdeletelist.append(objectrender)
+                    if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.getiframe() == 0:
+                        maincharacter.losehealth()
+                if objectrender.classtype =="powerup":
+                    if objectrender.checkcollision(maincharacter.getobjectbody()):
+                        objectdeletelist.append(objectrender)
+                        maincharacter.setjumppower()
                       
             if mouseclick:
                 sword.setswingstate()
@@ -139,23 +127,16 @@ if __name__=="__main__":
                 sword.toggleweapon()
                 weaponswap = False
 
-            for enemy in deadenemies:
-                if not(enemy.getx() < -150) and random.randint(1,100) >= 50:
-                    power=powerup(enemy.getx(),enemy.gety()+40,25,25,180)
-                    powerupslist.append(power)
-                enemylist.remove(enemy)
-            for critter in deadcritters:
-                critterlist.remove(critter)
-                print("Enemy was removed")
-            for timedpowers in timedoutpowerups:
-                powerupslist.remove(timedpowers)                
-
+            for objectrender in objectdeletelist:
+                if (objectrender.classtype == "enemy" and 
+                    not(objectrender.getx() < -150) and random.randint(1,100) >= 50):
+                    power=powerup(objectrender.getx(),objectrender.gety()+40,25,25,"powerup",180)
+                    objectrenderlist.append(power)
+                objectrenderlist.remove(objectrender)            
 
             maincharacter.frameupdate()  
-            for arrows in arrowslist:
-                arrows.frameupdate()
-                #TODO: make a system to delete arrows out of frame
-            sword.frameupdate(maincharacter.getposition(),arrowslist)
+
+            sword.frameupdate(maincharacter.getposition(),objectrenderlist)
 
             if backgroundtimer > 2:
                 backgroundx-=1
@@ -179,14 +160,11 @@ if __name__=="__main__":
                 screen.blit(pictures["heart"],(10+30*x,10))
             for x in range(maincharacter.getiframe()):
                 screen.blit(pictures["shield"],maincharacter.getposition())
-            for arrows in arrowslist:
-                screen.blit(pictures["arrowpic"],arrows.getposition())
-            for enemy in enemylist:
-                screen.blit(pictures["snakepic"],enemy.getposition())
-            for ability in powerupslist:
-                screen.blit(pictures["jumpboost"],ability.getposition())
-            for bunny in critterlist:
-                screen.blit(pictures["spritesheet"],(bunny.getposition()),bunny.getcoordinates())
+            for objectrender in objectrenderlist:
+                if objectrender.classtype == "critter":
+                    screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())
+                else:
+                    screen.blit(pictures[objectrender.classtype],objectrender.getposition())
         else:
             screen.blit(pictures["gameoverpic"],(0,0))
 
