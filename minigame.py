@@ -93,7 +93,10 @@ if __name__=="__main__":
             if lArrow_keypress:
                 maincharacter.changex(-1)
             if spawntimer==spawncounter:
-                snake=snakeenemy(600,193,70,70,"enemy",1)
+                snakehitpoint = 1
+                if random.randint(0,100) <= 30:
+                    snakehitpoint = 5
+                snake=snakeenemy(600,193,70,70,"enemy",snakehitpoint)
                 objectrenderlist.append(snake)
                 spawntimer=0
                 spawncounter=random.randint(120,300)
@@ -105,16 +108,24 @@ if __name__=="__main__":
             for objectrender in objectrenderlist:
                 if objectrender.offscreen():
                     objectdeletelist.append(objectrender)
+                if objectrender.outofhealth():
+                    objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
                 if objectrender.classtype == "enemy":
                     if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
-                        objectdeletelist.append(objectrender)
+                        objectrender.losehealth()
                     if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.getiframe() == 0:
                         maincharacter.losehealth()
                 if objectrender.classtype =="powerup":
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         objectdeletelist.append(objectrender)
                         maincharacter.setjumppower()
+                if objectrender.classtype == "arrow":
+                    for otherobject in objectrenderlist:
+                        if otherobject.classtype == "enemy":
+                            if objectrender.checkcollision(otherobject.getobjectbody()):
+                                otherobject.losehealth()
+                                objectdeletelist.append(objectrender)
                       
             if mouseclick:
                 sword.setswingstate()
@@ -163,6 +174,9 @@ if __name__=="__main__":
             for objectrender in objectrenderlist:
                 if objectrender.classtype == "critter":
                     screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())
+                elif objectrender.classtype == "enemy":
+                    screen.blit(pictures[objectrender.classtype],objectrender.getposition())
+                    screen.blit(pictures["heart"],(objectrender.x+20,objectrender.y-35))
                 else:
                     screen.blit(pictures[objectrender.classtype],objectrender.getposition())
         else:

@@ -50,4 +50,6 @@ class drawunit:
             return False
         else:
             return True
+    def outofhealth(self):
+        return False
         

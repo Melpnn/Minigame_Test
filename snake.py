@@ -8,5 +8,11 @@ class snakeenemy(drawunit):
         return self.health
     def losehealth(self):
         self.health = self.health - 1
+        print("the function ran")
+    def outofhealth(self):
+        if self.health <= 0:
+            return True
+        else:
+            return False
     def frameupdate(self):
         self.changex(-1)
