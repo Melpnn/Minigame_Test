@@ -26,6 +26,10 @@ class drawunit:
         return (self.x,self.y)
     def getobjectbody(self):
         return (self.x,self.y,self.width,self.height)
+    def getmiddlex(self):
+        return (self.x+(self.width/2))
+    def getmiddley(self):
+        return (self.y+(self.height/2))
     def changex(self,amount):
         self.x = self.x+amount
     def changey(self,amount):
@@ -52,4 +56,5 @@ class drawunit:
             return True
     def outofhealth(self):
         return False
+    
         

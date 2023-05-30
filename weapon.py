@@ -39,6 +39,6 @@ class weapon(drawunit):
             if self.weaponoffsetx <= 50:
                 self.weaponoffsetx = 60
                 self.swingstate = False
-                arrow=arrows(self.x,self.y,50,50,"arrow")
+                arrow=arrows(self.x,self.getmiddley()-5,30,10,"arrow")
                 arrowslist.append(arrow)
             

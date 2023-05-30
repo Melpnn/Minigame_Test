@@ -22,13 +22,14 @@ if __name__=="__main__":
         "slimepic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
         "swordpic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
         "bowpic" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
-        "arrow" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow.png")),(50,50)),
-        "enemy" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
+        "arrow" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
+        "enemy" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
         "gameoverpic" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
-        "critter" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
+        "critter" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
         "background" :  pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
         "heart" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
-        "powerup" :   pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
+        "powerup" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
+        "coin" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
         "shield" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
     }
 
@@ -86,7 +87,7 @@ if __name__=="__main__":
 
         #LOGIC:
 
-        if maincharacter.gethealth() > 0:
+        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
             objectdeletelist=[]
             if rArrow_keypress:
                 maincharacter.changex(1)
@@ -162,7 +163,7 @@ if __name__=="__main__":
             backgroundtimer+=1
 
         #Rendering
-        if maincharacter.gethealth() > 0:
+        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
             screen.blit(pictures["background"],(backgroundx,0))
             screen.blit(pictures["background"],(background2x,0))
             screen.blit(pictures[sword.getweapontype()],(sword.getposition()))
@@ -176,7 +177,16 @@ if __name__=="__main__":
                     screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())
                 elif objectrender.classtype == "enemy":
                     screen.blit(pictures[objectrender.classtype],objectrender.getposition())
-                    screen.blit(pictures["heart"],(objectrender.x+20,objectrender.y-35))
+                    heartoffsets=0
+                    for x in range(objectrender.gethealth()):
+                        if heartoffsets >= 0:
+                            heartoffsets = heartoffsets - x
+                        else:
+                            heartoffsets = heartoffsets + x
+                        if objectrender.gethealth()%2 == 1:
+                            screen.blit(pictures["heart"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
+                        else:
+                            screen.blit(pictures["heart"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
                 else:
                     screen.blit(pictures[objectrender.classtype],objectrender.getposition())
         else:
