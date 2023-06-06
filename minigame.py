@@ -17,6 +17,8 @@ if __name__=="__main__":
     clock = pygame.time.Clock()
 
     GROUNDLEVEL = 263
+    BGHEIGHT = 343
+    BGWIDTH = 600
 
     pictures={
         "slimepic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
@@ -32,6 +34,9 @@ if __name__=="__main__":
         "coin" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
         "shield" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
     }
+
+    for scorenumbers in range(0,10):
+        pictures[str(scorenumbers)] = pygame.transform.scale(pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),(60,60))
 
     dArrow_keypress = False
     rArrow_keypress = False
@@ -110,6 +115,7 @@ if __name__=="__main__":
                 if objectrender.offscreen():
                     objectdeletelist.append(objectrender)
                 if objectrender.outofhealth():
+                    maincharacter.score += 1
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
                 if objectrender.classtype == "enemy":
@@ -162,12 +168,19 @@ if __name__=="__main__":
 
             backgroundtimer+=1
 
+        singledigit = str((maincharacter.score%10))
+        tenthdigit = str((maincharacter.score//10)%10)
+        hundredthdigit = str((maincharacter.score//100)%10)
+
         #Rendering
         if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
             screen.blit(pictures["background"],(backgroundx,0))
             screen.blit(pictures["background"],(background2x,0))
             screen.blit(pictures[sword.getweapontype()],(sword.getposition()))
             screen.blit(pictures["slimepic"],(maincharacter.getposition()))
+            screen.blit(pictures[hundredthdigit],(420,0))
+            screen.blit(pictures[tenthdigit],(480,0))
+            screen.blit(pictures[singledigit],(540,0))
             for x in range(maincharacter.gethealth()):
                 screen.blit(pictures["heart"],(10+30*x,10))
             for x in range(maincharacter.getiframe()):

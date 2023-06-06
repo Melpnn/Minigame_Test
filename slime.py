@@ -9,8 +9,11 @@ class slime(drawunit):
         self.iframe = 0
         self.jumppower = 0.5
         self.powerupstatetimer = 0
+        self.score = 0
     def gethealth(self):
         return self.health
+    def getscore(self):
+        return self.score
     def getiframe(self):
         return self.iframe
     def getjumpstate(self):
