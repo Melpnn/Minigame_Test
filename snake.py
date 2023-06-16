@@ -1,9 +1,12 @@
 from drawunit import drawunit
 
 class snakeenemy(drawunit):
-    def __init__(self,x,y,width,height,classtype,health,):
+    def __init__(self,x,y,width,height,classtype,health,snaketype):
         drawunit.__init__(self,x,y,width,height,classtype)
         self.health = health
+        self.snaketype = snaketype
+    def getsnaketype(self):
+        return self.snaketype
     def gethealth(self):
         return self.health
     def losehealth(self):

@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 
+from drawunit import drawunit
 from snake import snakeenemy
 from powerup import powerup
 from slime import slime
@@ -29,10 +30,13 @@ if __name__=="__main__":
         "gameoverpic" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
         "critter" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
         "background" :  pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
+        "grayfilter":   pygame.image.load(os.path.join("Game Images","night_background.jpg")),
         "heart" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
         "powerup" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
         "coin" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
         "shield" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
+        "play" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
+        "pause" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
     }
 
     for scorenumbers in range(0,10):
@@ -45,9 +49,12 @@ if __name__=="__main__":
     mouseclick = False
     spacepress = False
     weaponswap = False
+    paused = True
     jumpframecount = 0 
-    maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,"slime",4,)
+    maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,"slime",4)
     sword=weapon(0,0,50,50,"weapon")
+    playbutton=drawunit(250,121,100,100,"button")
+    pausebutton=drawunit(385,10,25,25,"button")
     objectrenderlist=[]
     spawntimer=0
     spawncounter=random.randint(120,300)
@@ -64,6 +71,7 @@ if __name__=="__main__":
                 raise SystemExit
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseclick = True
+                mousetrack = pygame.mouse.get_pos()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
                     dArrow_keypress = True
@@ -100,9 +108,11 @@ if __name__=="__main__":
                 maincharacter.changex(-1)
             if spawntimer==spawncounter:
                 snakehitpoint = 1
+                snaketype = "Normal"
                 if random.randint(0,100) <= 30:
                     snakehitpoint = 5
-                snake=snakeenemy(600,193,70,70,"enemy",snakehitpoint)
+                    snaketype = "Big"
+                snake=snakeenemy(600,193,70,70,"enemy",snakehitpoint,snaketype)
                 objectrenderlist.append(snake)
                 spawntimer=0
                 spawncounter=random.randint(120,300)
@@ -115,7 +125,10 @@ if __name__=="__main__":
                 if objectrender.offscreen():
                     objectdeletelist.append(objectrender)
                 if objectrender.outofhealth():
-                    maincharacter.score += 1
+                    if objectrender.getsnaketype() == "Big":
+                        maincharacter.score += 3
+                    else:
+                        maincharacter.score += 1
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
                 if objectrender.classtype == "enemy":
@@ -133,8 +146,12 @@ if __name__=="__main__":
                             if objectrender.checkcollision(otherobject.getobjectbody()):
                                 otherobject.losehealth()
                                 objectdeletelist.append(objectrender)
-                      
+            
             if mouseclick:
+                if playbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                    paused = False 
+                if pausebutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                    paused = True
                 sword.setswingstate()
                 mouseclick=False
                 
@@ -178,6 +195,7 @@ if __name__=="__main__":
             screen.blit(pictures["background"],(background2x,0))
             screen.blit(pictures[sword.getweapontype()],(sword.getposition()))
             screen.blit(pictures["slimepic"],(maincharacter.getposition()))
+            screen.blit(pictures["pause"],(pausebutton.x,pausebutton.y))
             screen.blit(pictures[hundredthdigit],(420,0))
             screen.blit(pictures[tenthdigit],(480,0))
             screen.blit(pictures[singledigit],(540,0))
@@ -202,6 +220,8 @@ if __name__=="__main__":
                             screen.blit(pictures["heart"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
                 else:
                     screen.blit(pictures[objectrender.classtype],objectrender.getposition())
+            if paused:
+                screen.blit(pictures["play"],(playbutton.x,playbutton.y))
         else:
             screen.blit(pictures["gameoverpic"],(0,0))
 
