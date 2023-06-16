@@ -195,10 +195,11 @@ if __name__=="__main__":
             screen.blit(pictures["background"],(background2x,0))
             screen.blit(pictures[sword.getweapontype()],(sword.getposition()))
             screen.blit(pictures["slimepic"],(maincharacter.getposition()))
-            screen.blit(pictures["pause"],(pausebutton.x,pausebutton.y))
             screen.blit(pictures[hundredthdigit],(420,0))
             screen.blit(pictures[tenthdigit],(480,0))
             screen.blit(pictures[singledigit],(540,0))
+            if paused == False:
+                screen.blit(pictures["pause"],(pausebutton.x,pausebutton.y))
             for x in range(maincharacter.gethealth()):
                 screen.blit(pictures["heart"],(10+30*x,10))
             for x in range(maincharacter.getiframe()):
