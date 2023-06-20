@@ -1,5 +1,6 @@
 from drawunit import drawunit
 from arrows import arrows
+import random
 
 class weapon(drawunit):
     def __init__(self,x,y,width,height,classtype):
@@ -39,6 +40,9 @@ class weapon(drawunit):
             if self.weaponoffsetx <= 50:
                 self.weaponoffsetx = 60
                 self.swingstate = False
-                arrow=arrows(self.x,self.getmiddley()-5,30,10,"arrow")
+                if random.randint(1,100) > 50:
+                    arrow=arrows(self.x,self.getmiddley()-15,50,30,"bigarrow")
+                else:
+                    arrow=arrows(self.x,self.getmiddley()-5,30,10,"arrow")
                 arrowslist.append(arrow)
             

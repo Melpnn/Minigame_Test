@@ -26,6 +26,7 @@ if __name__=="__main__":
         "swordpic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
         "bowpic" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
         "arrow" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
+        "bigarrow" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(50,30)),
         "enemy" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
         "gameoverpic" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
         "critter" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
@@ -46,10 +47,11 @@ if __name__=="__main__":
     rArrow_keypress = False
     lArrow_keypress = False
     uArrow_keypress = False
+    escape_keypress = False
     mouseclick = False
     spacepress = False
     weaponswap = False
-    paused = True
+    paused = False
     jumpframecount = 0 
     maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,"slime",4)
     sword=weapon(0,0,50,50,"weapon")
@@ -83,6 +85,8 @@ if __name__=="__main__":
                     uArrow_keypress = True
                 if event.key == pygame.K_SPACE:
                     spacepress = True
+                if event.key == pygame.K_ESCAPE:
+                    escape_keypress = True
                 if event.key == pygame.K_q:
                     weaponswap = True
 
@@ -99,8 +103,15 @@ if __name__=="__main__":
                     spacepress = False
 
         #LOGIC:
-
-        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
+        if mouseclick:
+            if playbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                paused = False 
+            if pausebutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                paused = True
+        if escape_keypress:
+            paused = not paused
+            escape_keypress = False
+        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()) and not paused:
             objectdeletelist=[]
             if rArrow_keypress:
                 maincharacter.changex(1)
@@ -140,24 +151,23 @@ if __name__=="__main__":
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         objectdeletelist.append(objectrender)
                         maincharacter.setjumppower()
-                if objectrender.classtype == "arrow":
+                if  "arrow" in objectrender.classtype:
                     for otherobject in objectrenderlist:
                         if otherobject.classtype == "enemy":
                             if objectrender.checkcollision(otherobject.getobjectbody()):
-                                otherobject.losehealth()
+                                if objectrender.classtype == "bigarrow":
+                                    otherobject.losehealth(3)
+                                else:
+                                    otherobject.losehealth()
                                 objectdeletelist.append(objectrender)
             
             if mouseclick:
-                if playbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
-                    paused = False 
-                if pausebutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
-                    paused = True
                 sword.setswingstate()
                 mouseclick=False
                 
             if spacepress and not(maincharacter.getjumpstate()):
                 maincharacter.startjump()
-            
+
             if weaponswap:
                 sword.toggleweapon()
                 weaponswap = False
@@ -184,6 +194,8 @@ if __name__=="__main__":
                 backgroundtimer=0
 
             backgroundtimer+=1
+            spawntimer = spawntimer+1
+            crittertimer+=1
 
         singledigit = str((maincharacter.score%10))
         tenthdigit = str((maincharacter.score//10)%10)
@@ -228,6 +240,4 @@ if __name__=="__main__":
 
         #Timer
         pygame.display.flip()
-        spawntimer = spawntimer+1
-        crittertimer+=1
         clock.tick(60)

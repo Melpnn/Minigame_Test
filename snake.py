@@ -5,12 +5,17 @@ class snakeenemy(drawunit):
         drawunit.__init__(self,x,y,width,height,classtype)
         self.health = health
         self.snaketype = snaketype
+        self.iframe = 0
     def getsnaketype(self):
         return self.snaketype
     def gethealth(self):
         return self.health
-    def losehealth(self):
-        self.health = self.health - 1
+    def getiframe(self):
+        return self.iframe
+    def losehealth(self,damage=1):
+        if self.iframe == 0:
+            self.health = self.health - damage
+            self.iframe = 30
     def outofhealth(self):
         if self.health <= 0:
             return True
@@ -18,3 +23,5 @@ class snakeenemy(drawunit):
             return False
     def frameupdate(self):
         self.changex(-1)
+        if self.iframe > 0:
+            self.iframe -= 1
