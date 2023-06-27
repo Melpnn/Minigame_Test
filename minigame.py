@@ -26,18 +26,20 @@ if __name__=="__main__":
         "swordpic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
         "bowpic" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
         "arrow" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
-        "bigarrow" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(50,30)),
+        "bigarrow" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),(50,30)),
         "enemy" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
         "gameoverpic" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
         "critter" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
         "background" :  pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
-        "grayfilter":   pygame.image.load(os.path.join("Game Images","night_background.jpg")),
+        "grayfilter":   pygame.image.load(os.path.join("Game Images","grayfilter.png")),
         "heart" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
         "powerup" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
         "coin" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
         "shield" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
         "play" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
         "pause" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
+        "openmenu" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
+        "menu" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(600,343)),
     }
 
     for scorenumbers in range(0,10):
@@ -52,11 +54,13 @@ if __name__=="__main__":
     spacepress = False
     weaponswap = False
     paused = False
+    openmenu = False 
     jumpframecount = 0 
     maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,"slime",4)
     sword=weapon(0,0,50,50,"weapon")
     playbutton=drawunit(250,121,100,100,"button")
     pausebutton=drawunit(385,10,25,25,"button")
+    menubutton=drawunit(25,300,25,25,"button")
     objectrenderlist=[]
     spawntimer=0
     spawncounter=random.randint(120,300)
@@ -65,7 +69,7 @@ if __name__=="__main__":
     backgroundtimer=0
     backgroundx = 0
     background2x = 600
-
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -108,10 +112,12 @@ if __name__=="__main__":
                 paused = False 
             if pausebutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
                 paused = True
+            if menubutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                openmenu = True
         if escape_keypress:
             paused = not paused
             escape_keypress = False
-        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()) and not paused:
+        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()) and not (paused or openmenu):
             objectdeletelist=[]
             if rArrow_keypress:
                 maincharacter.changex(1)
@@ -156,7 +162,7 @@ if __name__=="__main__":
                         if otherobject.classtype == "enemy":
                             if objectrender.checkcollision(otherobject.getobjectbody()):
                                 if objectrender.classtype == "bigarrow":
-                                    otherobject.losehealth(3)
+                                    otherobject.losehealth(2)
                                 else:
                                     otherobject.losehealth()
                                 objectdeletelist.append(objectrender)
@@ -205,6 +211,7 @@ if __name__=="__main__":
         if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
             screen.blit(pictures["background"],(backgroundx,0))
             screen.blit(pictures["background"],(background2x,0))
+            screen.blit(pictures["openmenu"],(25,300))
             screen.blit(pictures[sword.getweapontype()],(sword.getposition()))
             screen.blit(pictures["slimepic"],(maincharacter.getposition()))
             screen.blit(pictures[hundredthdigit],(420,0))
@@ -234,7 +241,10 @@ if __name__=="__main__":
                 else:
                     screen.blit(pictures[objectrender.classtype],objectrender.getposition())
             if paused:
+                screen.blit(pictures["grayfilter"],(0,0))
                 screen.blit(pictures["play"],(playbutton.x,playbutton.y))
+            if openmenu:
+                screen.blit(pictures["menu"],(0,0))
         else:
             screen.blit(pictures["gameoverpic"],(0,0))
 
