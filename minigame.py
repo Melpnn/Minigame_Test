@@ -22,34 +22,42 @@ if __name__=="__main__":
     BGWIDTH = 600
 
     pictures={
-        "slimepic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
-        "swordpic" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
-        "bowpic" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
-        "arrow" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
-        "bigarrow" :    pygame.transform.scale(pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),(50,30)),
-        "enemy" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
-        "gameoverpic" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
-        "critter" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
-        "background" :  pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
-        "grayfilter":   pygame.image.load(os.path.join("Game Images","grayfilter.png")),
-        "heart" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
-        "powerup" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
-        "coin" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
-        "shield" :      pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
-        "play" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
-        "pause" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
-        "openmenu" :     pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
-        "menu" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(600,343)),
+        "slimepic" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
+        "swordpic" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
+        "bowpic" :            pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
+        "arrow" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
+        "bigarrow" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),(50,30)),
+        "enemy" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
+        "gameoverpic" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
+        "critter" :           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
+        "background" :        pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
+        "grayfilter":         pygame.image.load(os.path.join("Game Images","grayfilter.png")),
+        "heart" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
+        "powerup" :           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "jumpboost.png")),(25,25)),
+        "coin" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
+        "shield" :            pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
+        "play" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
+        "pause" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
+        "openmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
+        "menu" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(600,343)),
+        "slime_name_text" :   pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),(100,40)),
+        "health_text" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "health_text.png")),(140,40)),
+        "level_text" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "level_text.png")),(80,40)),
     }
 
     for scorenumbers in range(0,10):
         pictures[str(scorenumbers)] = pygame.transform.scale(pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),(60,60))
+
+    pictures["menu"].blit(pictures["slime_name_text"],(10,10))
+    pictures["menu"].blit(pictures["health_text"],(5,70))
+    pictures["menu"].blit(pictures["level_text"],(110,10))
 
     dArrow_keypress = False
     rArrow_keypress = False
     lArrow_keypress = False
     uArrow_keypress = False
     escape_keypress = False
+    ikey_keypress = False
     mouseclick = False
     spacepress = False
     weaponswap = False
@@ -93,7 +101,9 @@ if __name__=="__main__":
                     escape_keypress = True
                 if event.key == pygame.K_q:
                     weaponswap = True
-
+                if event.key == pygame.K_i:
+                    ikey_keypress = True
+                               
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_s:
                     dArrow_keypress = False
@@ -117,6 +127,9 @@ if __name__=="__main__":
         if escape_keypress:
             paused = not paused
             escape_keypress = False
+        if ikey_keypress:
+            openmenu = not openmenu
+            ikey_keypress = False
         if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()) and not (paused or openmenu):
             objectdeletelist=[]
             if rArrow_keypress:
@@ -245,6 +258,8 @@ if __name__=="__main__":
                 screen.blit(pictures["play"],(playbutton.x,playbutton.y))
             if openmenu:
                 screen.blit(pictures["menu"],(0,0))
+                for x in range(maincharacter.gethealth()):
+                    screen.blit(pictures["heart"],(130+30*x,80))
         else:
             screen.blit(pictures["gameoverpic"],(0,0))
 
