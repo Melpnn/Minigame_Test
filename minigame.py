@@ -40,6 +40,7 @@ if __name__=="__main__":
         "pause" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
         "openmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
         "menu" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(600,343)),
+        "exitmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
         "slime_name_text" :   pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),(100,40)),
         "health_text" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "health_text.png")),(140,40)),
         "level_text" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "level_text.png")),(80,40)),
@@ -63,17 +64,19 @@ if __name__=="__main__":
     weaponswap = False
     paused = False
     openmenu = False 
-    jumpframecount = 0 
+
     maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,"slime",4)
     sword=weapon(0,0,50,50,"weapon")
-    playbutton=drawunit(250,121,100,100,"button")
-    pausebutton=drawunit(385,10,25,25,"button")
-    menubutton=drawunit(25,300,25,25,"button")
+    playbutton = drawunit(250,121,100,100,"button")
+    pausebutton = drawunit(385,10,25,25,"button")
+    menubutton = drawunit(25,300,25,25,"button")
+    menuexitbutton = drawunit(550,300,25,25,"button")
+
     objectrenderlist=[]
     spawntimer=0
     spawncounter=random.randint(120,300)
-    critterspawncounter=random.randint(180,420)
     crittertimer=0
+    critterspawncounter=random.randint(180,420)
     backgroundtimer=0
     backgroundx = 0
     background2x = 600
@@ -124,6 +127,8 @@ if __name__=="__main__":
                 paused = True
             if menubutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
                 openmenu = True
+            if menuexitbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                openmenu = False
         if escape_keypress:
             paused = not paused
             escape_keypress = False
@@ -258,6 +263,7 @@ if __name__=="__main__":
                 screen.blit(pictures["play"],(playbutton.x,playbutton.y))
             if openmenu:
                 screen.blit(pictures["menu"],(0,0))
+                screen.blit(pictures["exitmenu"],(menuexitbutton.x,menuexitbutton.y))
                 for x in range(maincharacter.gethealth()):
                     screen.blit(pictures["heart"],(130+30*x,80))
         else:
