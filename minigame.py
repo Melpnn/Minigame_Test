@@ -4,6 +4,7 @@ import random
 
 from drawunit import drawunit
 from snake import snakeenemy
+from meteor import meteors
 from powerup import powerup
 from slime import slime
 from weapon import weapon
@@ -27,7 +28,8 @@ if __name__=="__main__":
         "bowpic" :            pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
         "arrow" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
         "bigarrow" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),(50,30)),
-        "enemy" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
+        "enemysnake" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
+        "enemymeteor":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),(30,80)),
         "gameoverpic" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
         "critter" :           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
         "background" :        pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
@@ -38,9 +40,9 @@ if __name__=="__main__":
         "shield" :            pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
         "play" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
         "pause" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
-        "openmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
+        "openmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
         "menu" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(600,343)),
-        "exitmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
+        "exitmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
         "slime_name_text" :   pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),(100,40)),
         "health_text" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "health_text.png")),(140,40)),
         "level_text" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "level_text.png")),(80,40)),
@@ -77,6 +79,9 @@ if __name__=="__main__":
     spawncounter=random.randint(120,300)
     crittertimer=0
     critterspawncounter=random.randint(180,420)
+    meteortimer = 0
+    meteorspawncounter=random.randint(180,300)
+
     backgroundtimer=0
     backgroundx = 0
     background2x = 600
@@ -147,10 +152,15 @@ if __name__=="__main__":
                 if random.randint(0,100) <= 30:
                     snakehitpoint = 5
                     snaketype = "Big"
-                snake=snakeenemy(600,193,70,70,"enemy",snakehitpoint,snaketype)
+                snake=snakeenemy(600,193,70,70,"enemysnake",snakehitpoint,snaketype)
                 objectrenderlist.append(snake)
                 spawntimer=0
-                spawncounter=random.randint(120,300)
+                spawncounter=random.randint(0,180)
+            if meteortimer == meteorspawncounter:
+                meteor = meteors(random.randint(50,550),-100,30,80,"enemymeteor")
+                objectrenderlist.append(meteor)
+                meteortimer = 0
+                meteorspawncounter = random.randint(180,360)
             if crittertimer==critterspawncounter:
                 bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
                 objectrenderlist.append(bunny)
@@ -166,7 +176,7 @@ if __name__=="__main__":
                         maincharacter.score += 1
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
-                if objectrender.classtype == "enemy":
+                if objectrender.classtype == "enemysnake":
                     if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
                         objectrender.losehealth()
                     if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.getiframe() == 0:
@@ -174,10 +184,10 @@ if __name__=="__main__":
                 if objectrender.classtype =="powerup":
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         objectdeletelist.append(objectrender)
-                        maincharacter.setjumppower()
+                        maincharacter.restorehealth()
                 if  "arrow" in objectrender.classtype:
                     for otherobject in objectrenderlist:
-                        if otherobject.classtype == "enemy":
+                        if otherobject.classtype == "enemysnake":
                             if objectrender.checkcollision(otherobject.getobjectbody()):
                                 if objectrender.classtype == "bigarrow":
                                     otherobject.losehealth(2)
@@ -197,9 +207,9 @@ if __name__=="__main__":
                 weaponswap = False
 
             for objectrender in objectdeletelist:
-                if (objectrender.classtype == "enemy" and 
+                if (objectrender.classtype == "enemysnake" and 
                     not(objectrender.getx() < -150) and random.randint(1,100) >= 50):
-                    power=powerup(objectrender.getx(),objectrender.gety()+40,25,25,"powerup",180)
+                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - 12,objectrender.gety()+40,25,25,"powerup",600)
                     objectrenderlist.append(power)
                 objectrenderlist.remove(objectrender)            
 
@@ -220,6 +230,7 @@ if __name__=="__main__":
             backgroundtimer+=1
             spawntimer = spawntimer+1
             crittertimer+=1
+            meteortimer +=1
 
         singledigit = str((maincharacter.score%10))
         tenthdigit = str((maincharacter.score//10)%10)
@@ -244,7 +255,7 @@ if __name__=="__main__":
             for objectrender in objectrenderlist:
                 if objectrender.classtype == "critter":
                     screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())
-                elif objectrender.classtype == "enemy":
+                elif objectrender.classtype == "enemysnake":
                     screen.blit(pictures[objectrender.classtype],objectrender.getposition())
                     heartoffsets=0
                     for x in range(objectrender.gethealth()):

@@ -5,6 +5,7 @@ class slime(drawunit):
         drawunit.__init__(self,x,y,width,height,classtype)
         self.groundlevel = self.y
         self.health = health
+        self.healthcap = 5
         self.jumpstate = False
         self.jumpframe = 0
         self.iframe = 0
@@ -20,6 +21,9 @@ class slime(drawunit):
         return self.jumpstate
     def getjumpheight(self):
         return (1/20)*(self.jumpframe)*(self.jumpframe - 120)
+    def restorehealth(self):
+        if self.health < self.healthcap:
+            self.health +=1
     def losehealth(self):
         self.health = self.health - 1
         self.iframe = 120
