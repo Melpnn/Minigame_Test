@@ -24,9 +24,10 @@ class slime(drawunit):
     def restorehealth(self):
         if self.health < self.healthcap:
             self.health +=1
-    def losehealth(self):
-        self.health = self.health - 1
-        self.iframe = 120
+    def losehealth(self,damage = 1):
+        if self.getiframe() == 0:
+            self.health = self.health - damage
+            self.iframe = 120
     def startjump(self):
         self.jumpstate = True
         self.jumpframe = 0

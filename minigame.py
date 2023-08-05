@@ -9,6 +9,7 @@ from powerup import powerup
 from slime import slime
 from weapon import weapon
 from critters import critters
+from explosion import explosion
 from pygame.locals import * 
 
 
@@ -32,6 +33,8 @@ if __name__=="__main__":
         "enemymeteor":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),(30,80)),
         "gameoverpic" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
         "critter" :           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
+        "explosion" :         pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),(300,120)), 
+        #pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),
         "background" :        pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
         "grayfilter":         pygame.image.load(os.path.join("Game Images","grayfilter.png")),
         "heart" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
@@ -81,6 +84,10 @@ if __name__=="__main__":
     critterspawncounter=random.randint(180,420)
     meteortimer = 0
     meteorspawncounter=random.randint(180,300)
+    explosioncoordinateslist = []
+    for rows in range(2):
+        for columns in range(5):
+            explosioncoordinateslist.append((columns*60,rows*60,59,59))
 
     backgroundtimer=0
     backgroundx = 0
@@ -179,12 +186,26 @@ if __name__=="__main__":
                 if objectrender.classtype == "enemysnake":
                     if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
                         objectrender.losehealth()
-                    if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.getiframe() == 0:
+                    if objectrender.checkcollision(maincharacter.getobjectbody()):
                         maincharacter.losehealth()
                 if objectrender.classtype =="powerup":
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         objectdeletelist.append(objectrender)
                         maincharacter.restorehealth()
+                if objectrender.classtype == "enemymeteor":
+                    for otherobject in objectrenderlist:
+                        if otherobject.classtype == "enemysnake":
+                            if objectrender.checkcollision(otherobject.getobjectbody()):
+                                otherobject.losehealth(otherobject.gethealth())      
+                    if objectrender.checkcollision(maincharacter.getobjectbody()):
+                        maincharacter.losehealth(3)
+                    if objectrender.y >= GROUNDLEVEL - 30:
+                        explosioneffect = explosion(objectrender.x+(objectrender.width/2)-29.5,objectrender.y,59,59,"explosion", explosioncoordinateslist)
+                        objectrenderlist.append(explosioneffect)
+                        objectdeletelist.append(objectrender)
+                if objectrender.classtype == "explosion":
+                    if objectrender.animationstate > 9:
+                        objectdeletelist.append(objectrender)
                 if  "arrow" in objectrender.classtype:
                     for otherobject in objectrenderlist:
                         if otherobject.classtype == "enemysnake":
@@ -255,6 +276,8 @@ if __name__=="__main__":
             for objectrender in objectrenderlist:
                 if objectrender.classtype == "critter":
                     screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())
+                elif objectrender.classtype == "explosion":
+                    screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())  
                 elif objectrender.classtype == "enemysnake":
                     screen.blit(pictures[objectrender.classtype],objectrender.getposition())
                     heartoffsets=0
