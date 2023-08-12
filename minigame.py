@@ -13,51 +13,154 @@ from critters import critters
 from explosion import explosion
 from pygame.locals import * 
 
+GROUNDLEVEL = 263
+BGHEIGHT = 343
+BGWIDTH = 600
 
 if __name__=="__main__":
     pygame.init()
-    screen = pygame.display.set_mode((600,343))
+    screen = pygame.display.set_mode((BGWIDTH,BGHEIGHT))
 
     clock = pygame.time.Clock()
 
-    GROUNDLEVEL = 263
-    BGHEIGHT = 343
-    BGWIDTH = 600
-
     pictures={
-        "slimepic" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
-        "swordpic" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
-        "bowpic" :            pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
-        "arrow" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
-        "bigarrow" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),(50,30)),
-        "enemysnake" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
-        "enemymeteor":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),(30,80)),
-        "enemydragon":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","dragon.png")),(120,40)),
-        "gameoverpic" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(600,343)),
-        "critter" :           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
-        "explosion" :         pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),(300,120)), 
-        "background" :        pygame.image.load(os.path.join("Game Images","night_background.jpg")).convert(),
-        "grayfilter":         pygame.image.load(os.path.join("Game Images","grayfilter.png")),
-        "heart" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
-        "powerup" :           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "healthpotion.png")),(35,35)),
-        "coin" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
-        "shield" :            pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
-        "play" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
-        "pause" :             pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
-        "openmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
-        "menu" :              pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(600,343)),
-        "exitmenu" :          pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
-        "slime_name_text" :   pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),(100,40)),
-        "health_text" :       pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "health_text.png")),(140,40)),
-        "level_text" :        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "level_text.png")),(80,40)),
+        "slimepic" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
+            "dimensions" :    (60,60),
+            "width"  :        60,
+            "height" :        60, },
+        "swordpic" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
+            "dimensions" :    (50,50),
+            "width"  :        50,
+            "height" :        50, },
+        "bowpic" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
+            "dimensions" :    (50,50),
+            "width"  :        50,
+            "height" :        50, },           
+        "arrow" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
+            "dimensions" :    (30,10),
+            "width"  :        30,
+            "height" :        10, },             
+        "bigarrow" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),(50,30)),
+            "dimensions" :    (50,30),
+            "width"  :        50,
+            "height" :        30, },               
+        "enemysnake" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
+            "dimensions" :    (70,70),
+            "width"  :        70,
+            "height" :        70, },        
+        "enemymeteor": {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),(30,80)),
+            "dimensions" :    (30,80),
+            "width"  :        30,
+            "height" :        80, },             
+        "enemydragon":  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","dragon.png")),(120,40)),
+            "dimensions" :    (120,40),
+            "width"  :        120,
+            "height" :        40, },               
+        "gameoverpic" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },         
+        "critter" :    {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
+            "dimensions" :    (653,422),
+            "width"  :        653,
+            "height" :        422, },        
+        "explosion" :   {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),(300,120)), 
+            "dimensions" :    (300,120),
+            "width"  :        300,
+            "height" :        120, },            
+        "background" :  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","night_background.jpg")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },            
+        "grayfilter":  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","grayfilter.png")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },                  
+        "heart" :  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
+            "dimensions" :    (25,25),
+            "width"  :        25,
+            "height" :        25, },              
+        "powerup" :   {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "healthpotion.png")),(20,30)),
+            "dimensions" :    (20,30),
+            "width"  :        20,
+            "height" :        30, },         
+        "coin" :     {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
+            "dimensions" :    (25,50),
+            "width"  :        25,
+            "height" :        50, },           
+        "shield" :      {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
+            "dimensions" :    (69,69),
+            "width"  :        69,
+            "height" :        69, },           
+        "play" :    {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
+            "dimensions" :    (100,100),
+            "width"  :        100,
+            "height" :        100, },            
+        "pause" :    {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
+            "dimensions" :    (25,25),
+            "width"  :        25,
+            "height" :        25, },            
+        "openmenu" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
+            "dimensions" :    (25,25),
+            "width"  :        25,
+            "height" :        25, },            
+        "menu" :     {
+            "surface":           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },         
+        "exitmenu" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
+            "dimensions" :    (25,25),
+            "width"  :        25,
+            "height" :        25, },               
+        "slime_name_text" :  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),(100,40)),
+            "dimensions" :    (100,40),
+            "width"  :        100,
+            "height" :        40, },              
+        "health_text" :   {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "health_text.png")),(140,40)),
+            "dimensions" :    (140,40),
+            "width"  :        140,
+            "height" :        40, },       
+        "level_text" :    {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "level_text.png")),(80,40)),
+            "dimensions" :    (80,40),
+            "width"  :        80,
+            "height" :        40, },     
     }
 
-    for scorenumbers in range(0,10):
-        pictures[str(scorenumbers)] = pygame.transform.scale(pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),(60,60))
+    for scorenumbers in range(10):
+        pictures[str(scorenumbers)] = {
+            "surface" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),(60,60)),
+            "dimensions" :    (60,60),
+            "width" :   60,
+            "height" :  60, }
 
-    pictures["menu"].blit(pictures["slime_name_text"],(10,10))
-    pictures["menu"].blit(pictures["health_text"],(5,70))
-    pictures["menu"].blit(pictures["level_text"],(110,10))
+    pictures["menu"]["surface"].blit(pictures["slime_name_text"]["surface"],(10,10))
+    pictures["menu"]["surface"].blit(pictures["health_text"]["surface"],(5,70))
+    pictures["menu"]["surface"].blit(pictures["level_text"]["surface"],(110,10))
 
     dArrow_keypress = False
     rArrow_keypress = False
@@ -72,12 +175,12 @@ if __name__=="__main__":
     openmenu = False 
 
     #Loading Objects
-    maincharacter=slime(0,(GROUNDLEVEL - 60),60,60,"slime",4)
-    sword=weapon(0,0,50,50,"weapon")
-    playbutton = drawunit(250,121,100,100,"button")
-    pausebutton = drawunit(385,10,25,25,"button")
-    menubutton = drawunit(25,300,25,25,"button")
-    menuexitbutton = drawunit(550,300,25,25,"button")
+    maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["width"],pictures["slimepic"]["height"],"slime",4)
+    sword=weapon(0,0,pictures["swordpic"]["width"],pictures["swordpic"]["height"],"weapon")
+    playbutton = drawunit(250,121,pictures["play"]["width"],pictures["play"]["height"],"button")
+    pausebutton = drawunit(385,10,pictures["pause"]["width"],pictures["pause"]["height"],"button")
+    menubutton = drawunit(25,300,pictures["openmenu"]["width"],pictures["openmenu"]["height"],"button")
+    menuexitbutton = drawunit(550,300,pictures["exitmenu"]["width"],pictures["exitmenu"]["height"],"button")
 
     #Spawn Timers
     snakespawntimer=0
@@ -167,17 +270,17 @@ if __name__=="__main__":
                 if random.randint(0,100) <= 30:
                     snakehitpoint = 5
                     snaketype = "Big"
-                snake=snakeenemy(600,193,70,70,"enemysnake",snakehitpoint,snaketype)
+                snake=snakeenemy(600,193,pictures["enemysnake"]["width"],pictures["enemysnake"]["height"],"enemysnake",snakehitpoint,snaketype)
                 objectrenderlist.append(snake)
                 snakespawntimer=0
                 snakespawncounter=random.randint(0,180)
             if meteortimer == meteorspawncounter:
-                meteor = meteors(random.randint(50,550),-100,30,80,"enemymeteor")
+                meteor = meteors(random.randint(50,550),-100,pictures["enemymeteor"]["width"],pictures["enemymeteor"]["height"],"enemymeteor")
                 objectrenderlist.append(meteor)
                 meteortimer = 0
                 meteorspawncounter = random.randint(180,360)
             if dragontimer == dragonspawncounter:
-                dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),120,40,"enemydragon")
+                dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon")
                 objectrenderlist.append(dragon)
                 dragontimer = 0
                 dragonspawncounter = random.randint(180,420)
@@ -250,9 +353,14 @@ if __name__=="__main__":
             for objectrender in objectdeletelist:
                 if (objectrender.classtype == "enemysnake" and 
                     not(objectrender.getx() < -150) and random.randint(1,100) >= 50):
-                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - 12,objectrender.gety()+40,25,25,"powerup",600)
+                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - 12,objectrender.gety()+40,pictures["powerup"]["width"],pictures["powerup"]["height"],"powerup",600)
                     objectrenderlist.append(power)
-                objectrenderlist.remove(objectrender)            
+                try:
+                    objectrenderlist.remove(objectrender)     
+                except ValueError:
+                    print("Object Does Not Exist in List")
+                except:
+                    print("Unknown Error")
 
             maincharacter.frameupdate()  
 
@@ -280,29 +388,29 @@ if __name__=="__main__":
 
         #Rendering
         if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
-            screen.blit(pictures["background"],(backgroundx,0))
-            screen.blit(pictures["background"],(background2x,0))
-            screen.blit(pictures["openmenu"],(25,300))
-            screen.blit(pictures[sword.getweapontype()],(sword.getposition()))
-            screen.blit(pictures["slimepic"],(maincharacter.getposition()))
-            screen.blit(pictures[hundredthdigit],(420,0))
-            screen.blit(pictures[tenthdigit],(480,0))
-            screen.blit(pictures[singledigit],(540,0))
+            screen.blit(pictures["background"]["surface"],(backgroundx,0))
+            screen.blit(pictures["background"]["surface"],(background2x,0))
+            screen.blit(pictures["openmenu"]["surface"],(25,300))
+            screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
+            screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
+            screen.blit(pictures[hundredthdigit]["surface"],(420,0))
+            screen.blit(pictures[tenthdigit]["surface"],(480,0))
+            screen.blit(pictures[singledigit]["surface"],(540,0))
             if paused == False:
-                screen.blit(pictures["pause"],(pausebutton.x,pausebutton.y))
+                screen.blit(pictures["pause"]["surface"],(pausebutton.x,pausebutton.y))
             for x in range(maincharacter.gethealth()):
-                screen.blit(pictures["heart"],(10+30*x,10))
+                screen.blit(pictures["heart"]["surface"],(10+30*x,10))
             for x in range(maincharacter.getiframe()):
-                screen.blit(pictures["shield"],maincharacter.getposition())
+                screen.blit(pictures["shield"]["surface"],maincharacter.getposition())
             for objectrender in objectrenderlist:
                 if objectrender.classtype == "critter":
-                    screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())
+                    screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())
                 elif objectrender.classtype == "enemydragon":
-                    screen.blit(pictures[objectrender.classtype],objectrender.getposition())
+                    screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
                 elif objectrender.classtype == "explosion":
-                    screen.blit(pictures[objectrender.classtype],(objectrender.getposition()),objectrender.getcoordinates())  
+                    screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
                 elif objectrender.classtype == "enemysnake":
-                    screen.blit(pictures[objectrender.classtype],objectrender.getposition())
+                    screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
                     heartoffsets=0
                     for x in range(objectrender.gethealth()):
                         if heartoffsets >= 0:
@@ -310,21 +418,21 @@ if __name__=="__main__":
                         else:
                             heartoffsets = heartoffsets + x
                         if objectrender.gethealth()%2 == 1:
-                            screen.blit(pictures["heart"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
+                            screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
                         else:
-                            screen.blit(pictures["heart"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
+                            screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
                 else:
-                    screen.blit(pictures[objectrender.classtype],objectrender.getposition())
+                    screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
             if paused:
-                screen.blit(pictures["grayfilter"],(0,0))
-                screen.blit(pictures["play"],(playbutton.x,playbutton.y))
+                screen.blit(pictures["grayfilter"]["surface"],(0,0))
+                screen.blit(pictures["play"]["surface"],(playbutton.x,playbutton.y))
             if openmenu:
-                screen.blit(pictures["menu"],(0,0))
-                screen.blit(pictures["exitmenu"],(menuexitbutton.x,menuexitbutton.y))
+                screen.blit(pictures["menu"]["surface"],(0,0))
+                screen.blit(pictures["exitmenu"]["surface"],(menuexitbutton.x,menuexitbutton.y))
                 for x in range(maincharacter.gethealth()):
-                    screen.blit(pictures["heart"],(130+30*x,80))
+                    screen.blit(pictures["heart"]["surface"],(130+30*x,80))
         else:
-            screen.blit(pictures["gameoverpic"],(0,0))
+            screen.blit(pictures["gameoverpic"]["surface"],(0,0))
 
         #Timer
         pygame.display.flip()
