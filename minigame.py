@@ -17,6 +17,27 @@ GROUNDLEVEL = 263
 BGHEIGHT = 343
 BGWIDTH = 600
 
+def generateobject(classtype,objectrenderlist):
+    if classtype == "enemysnake":
+        snakehitpoint = 1
+        snaketype = "Normal"
+        if random.randint(0,100) <= 30:
+            snakehitpoint = 5
+            snaketype = "Big"
+        snake=snakeenemy(600,193,pictures["enemysnake"]["width"],pictures["enemysnake"]["height"],"enemysnake",snakehitpoint,snaketype)
+        objectrenderlist.append(snake)
+    elif classtype == "enemymeteor":       
+        meteor = meteors(random.randint(50,550),-100,pictures["enemymeteor"]["width"],pictures["enemymeteor"]["height"],"enemymeteor")
+        objectrenderlist.append(meteor)
+    elif classtype == "enemydragon":
+        dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon")
+        objectrenderlist.append(dragon)
+    elif classtype == "critter":
+        bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
+        objectrenderlist.append(bunny)
+    else:
+        print("Unkown Classtype " + classtype)
+
 if __name__=="__main__":
     pygame.init()
     screen = pygame.display.set_mode((BGWIDTH,BGHEIGHT))
@@ -71,14 +92,14 @@ if __name__=="__main__":
             "height" :        BGHEIGHT, },         
         "critter" :    {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
-            "dimensions" :    (653,422),
-            "width"  :        653,
-            "height" :        422, },        
+            "dimensions" :    (31,31),
+            "width"  :        31,
+            "height" :        31, },        
         "explosion" :   {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),(300,120)), 
-            "dimensions" :    (300,120),
-            "width"  :        300,
-            "height" :        120, },            
+            "dimensions" :    (59,59),
+            "width"  :        59,
+            "height" :        59, },            
         "background" :  {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","night_background.jpg")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
@@ -192,10 +213,9 @@ if __name__=="__main__":
     dragontimer = 0
     dragonspawncounter=random.randint(180,420)
 
-    #Lists
     objectrenderlist=[]
-    explosioncoordinateslist = []
 
+    explosioncoordinateslist = []
     for rows in range(2):
         for columns in range(5):
             explosioncoordinateslist.append((columns*60,rows*60,59,59))
@@ -265,65 +285,55 @@ if __name__=="__main__":
             if lArrow_keypress:
                 maincharacter.changex(-1)
             if snakespawntimer==snakespawncounter:
-                snakehitpoint = 1
-                snaketype = "Normal"
-                if random.randint(0,100) <= 30:
-                    snakehitpoint = 5
-                    snaketype = "Big"
-                snake=snakeenemy(600,193,pictures["enemysnake"]["width"],pictures["enemysnake"]["height"],"enemysnake",snakehitpoint,snaketype)
-                objectrenderlist.append(snake)
+                generateobject("enemysnake",objectrenderlist)
                 snakespawntimer=0
                 snakespawncounter=random.randint(0,180)
             if meteortimer == meteorspawncounter:
-                meteor = meteors(random.randint(50,550),-100,pictures["enemymeteor"]["width"],pictures["enemymeteor"]["height"],"enemymeteor")
-                objectrenderlist.append(meteor)
+                generateobject("enemymeteor",objectrenderlist)
                 meteortimer = 0
                 meteorspawncounter = random.randint(180,360)
             if dragontimer == dragonspawncounter:
-                dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon")
-                objectrenderlist.append(dragon)
+                generateobject("enemydragon",objectrenderlist)
                 dragontimer = 0
                 dragonspawncounter = random.randint(180,420)
             if crittertimer == critterspawncounter:
-                bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
-                objectrenderlist.append(bunny)
+                generateobject("critter",objectrenderlist)
                 crittertimer=0
                 critterspawncounter=random.randint(180,420)
+
             for objectrender in objectrenderlist:
                 if objectrender.offscreen():
                     objectdeletelist.append(objectrender)
                 if objectrender.outofhealth():
-                    if objectrender.getsnaketype() == "Big":
+                    if objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big":
                         maincharacter.score += 3
                     else:
                         maincharacter.score += 1
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
-                if objectrender.classtype == "enemysnake":
+                if objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
                     if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
                         objectrender.losehealth()
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         maincharacter.losehealth()
-                if objectrender.classtype == "enemydragon":
-                    if objectrender.checkcollision(maincharacter.getobjectbody()):
-                        maincharacter.losehealth()
-                        objectdeletelist.append(objectrender)
                 if objectrender.classtype =="powerup":
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         objectdeletelist.append(objectrender)
                         maincharacter.restorehealth()
                 if objectrender.classtype == "enemymeteor":
                     for otherobject in objectrenderlist:
-                        if otherobject.classtype == "enemysnake":
-                            if objectrender.checkcollision(otherobject.getobjectbody()):
-                                otherobject.losehealth(otherobject.gethealth())  
-                        if otherobject.classtype == "enemydragon":
-                                if objectrender.checkcollision(otherobject.getobjectbody()):
-                                    objectdeletelist.append(otherobject)    
+                        if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon") 
+                            and objectrender.checkcollision(otherobject.getobjectbody())):
+                            otherobject.losehealth(otherobject.gethealth())  
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         maincharacter.losehealth(3)
                     if objectrender.y >= GROUNDLEVEL - 40:
-                        explosioneffect = explosion(objectrender.x+(objectrender.width/2)-29.5,objectrender.y,59,59,"explosion", explosioncoordinateslist)
+                        explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion"]["width"]/2),
+                                                    objectrender.y,
+                                                    pictures["explosion"]["width"],
+                                                    pictures["explosion"]["height"],
+                                                    "explosion", 
+                                                    explosioncoordinateslist)
                         objectrenderlist.append(explosioneffect)
                         objectdeletelist.append(objectrender)
                 if objectrender.classtype == "explosion":
@@ -331,7 +341,7 @@ if __name__=="__main__":
                         objectdeletelist.append(objectrender)
                 if  "arrow" in objectrender.classtype:
                     for otherobject in objectrenderlist:
-                        if otherobject.classtype == "enemysnake":
+                        if otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon":
                             if objectrender.checkcollision(otherobject.getobjectbody()):
                                 if objectrender.classtype == "bigarrow":
                                     otherobject.losehealth(2)
@@ -353,7 +363,12 @@ if __name__=="__main__":
             for objectrender in objectdeletelist:
                 if (objectrender.classtype == "enemysnake" and 
                     not(objectrender.getx() < -150) and random.randint(1,100) >= 50):
-                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - 12,objectrender.gety()+40,pictures["powerup"]["width"],pictures["powerup"]["height"],"powerup",600)
+                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["powerup"]["width"]/2),
+                                  objectrender.gety() + (objectrender.height - pictures["powerup"]["height"]),
+                                  pictures["powerup"]["width"],
+                                  pictures["powerup"]["height"],
+                                  "powerup",
+                                  600)
                     objectrenderlist.append(power)
                 try:
                     objectrenderlist.remove(objectrender)     
