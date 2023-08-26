@@ -105,6 +105,16 @@ if __name__=="__main__":
             "dimensions" :    (BGWIDTH,BGHEIGHT),
             "width"  :        BGWIDTH,
             "height" :        BGHEIGHT, },            
+        "desert" :  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","desert_background.jpg")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },
+        "loadingscreen" :  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","loadingscreen_background.jpg")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },        
         "grayfilter":  {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","grayfilter.png")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
@@ -223,6 +233,8 @@ if __name__=="__main__":
     backgroundtimer=0
     backgroundx = 0
     background2x = 600
+
+    stage = 0
     
     while True:
         for event in pygame.event.get():
@@ -284,19 +296,19 @@ if __name__=="__main__":
                 maincharacter.changex(1)
             if lArrow_keypress:
                 maincharacter.changex(-1)
-            if snakespawntimer==snakespawncounter:
+            if snakespawntimer >= snakespawncounter:
                 generateobject("enemysnake",objectrenderlist)
                 snakespawntimer=0
                 snakespawncounter=random.randint(0,180)
-            if meteortimer == meteorspawncounter:
+            if meteortimer >= meteorspawncounter:
                 generateobject("enemymeteor",objectrenderlist)
                 meteortimer = 0
                 meteorspawncounter = random.randint(180,360)
-            if dragontimer == dragonspawncounter:
+            if dragontimer >= dragonspawncounter and stage >= 1:
                 generateobject("enemydragon",objectrenderlist)
                 dragontimer = 0
                 dragonspawncounter = random.randint(180,420)
-            if crittertimer == critterspawncounter:
+            if crittertimer >= critterspawncounter:
                 generateobject("critter",objectrenderlist)
                 crittertimer=0
                 critterspawncounter=random.randint(180,420)
@@ -307,7 +319,7 @@ if __name__=="__main__":
                 if objectrender.outofhealth():
                     if objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big":
                         maincharacter.score += 3
-                    else:
+                    elif objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
                         maincharacter.score += 1
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
@@ -335,9 +347,6 @@ if __name__=="__main__":
                                                     "explosion", 
                                                     explosioncoordinateslist)
                         objectrenderlist.append(explosioneffect)
-                        objectdeletelist.append(objectrender)
-                if objectrender.classtype == "explosion":
-                    if objectrender.animationstate > 9:
                         objectdeletelist.append(objectrender)
                 if  "arrow" in objectrender.classtype:
                     for otherobject in objectrenderlist:
@@ -401,10 +410,17 @@ if __name__=="__main__":
         tenthdigit = str((maincharacter.score//10)%10)
         hundredthdigit = str((maincharacter.score//100)%10)
 
+        if maincharacter.score >= 25:
+            stage = 1
+
         #Rendering
         if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
-            screen.blit(pictures["background"]["surface"],(backgroundx,0))
-            screen.blit(pictures["background"]["surface"],(background2x,0))
+            if stage == 0:
+                screen.blit(pictures["background"]["surface"],(backgroundx,0))
+                screen.blit(pictures["background"]["surface"],(background2x,0))
+            elif stage == 1:
+                screen.blit(pictures["desert"]["surface"],(backgroundx,0))
+                screen.blit(pictures["desert"]["surface"],(background2x,0))
             screen.blit(pictures["openmenu"]["surface"],(25,300))
             screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
             screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))

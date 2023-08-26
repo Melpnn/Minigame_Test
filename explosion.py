@@ -11,6 +11,11 @@ class explosion(drawunit):
             return self.coordinateslist[self.animationstate]   
         else:
             return self.coordinateslist[9]
+    def outofhealth(self):
+        if self.animationstate > 9:
+            return True
+        else:
+            return False
     def frameupdate(self):
         self.idleframes+=1
         if self.idleframes >= 6:
