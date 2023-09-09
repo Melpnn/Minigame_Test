@@ -156,7 +156,7 @@ if __name__=="__main__":
             "width"  :        25,
             "height" :        25, },            
         "menu" :     {
-            "surface":           pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(BGWIDTH,BGHEIGHT)),
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
             "width"  :        BGWIDTH,
             "height" :        BGHEIGHT, },         
@@ -179,7 +179,22 @@ if __name__=="__main__":
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "level_text.png")),(80,40)),
             "dimensions" :    (80,40),
             "width"  :        80,
-            "height" :        40, },     
+            "height" :        40, },    
+        "killcount_text" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "killcounttitle_text.png")),(150,30)),
+            "dimensions" :    (150,30),
+            "width"  :        150,
+            "height" :        30, }, 
+        "snakekillcount_text" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "snakekillcount_text.png")),(140,40)),
+            "dimensions" :    (140,40),
+            "width"  :        140,
+            "height" :        40, }, 
+        "dragonkillcount_text" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "dragonkillcount_text.png")),(140,40)),
+            "dimensions" :    (140,40),
+            "width"  :        140,
+            "height" :        40, }, 
     }
 
     for scorenumbers in range(10):
@@ -192,6 +207,9 @@ if __name__=="__main__":
     pictures["menu"]["surface"].blit(pictures["slime_name_text"]["surface"],(10,10))
     pictures["menu"]["surface"].blit(pictures["health_text"]["surface"],(5,70))
     pictures["menu"]["surface"].blit(pictures["level_text"]["surface"],(110,10))
+    pictures["menu"]["surface"].blit(pictures["killcount_text"]["surface"],(330,15))
+    pictures["menu"]["surface"].blit(pictures["snakekillcount_text"]["surface"],(305,50))
+    pictures["menu"]["surface"].blit(pictures["dragonkillcount_text"]["surface"],(305,90))
 
     dArrow_keypress = False
     rArrow_keypress = False
@@ -235,6 +253,7 @@ if __name__=="__main__":
     background2x = 600
 
     stage = 0
+
     
     while True:
         for event in pygame.event.get():
@@ -294,8 +313,12 @@ if __name__=="__main__":
             objectdeletelist=[]
             if rArrow_keypress:
                 maincharacter.changex(1)
+                if maincharacter.offscreen():
+                    maincharacter.changex(-1)
             if lArrow_keypress:
                 maincharacter.changex(-1)
+                if maincharacter.offscreen():
+                    maincharacter.changex(1)
             if snakespawntimer >= snakespawncounter:
                 generateobject("enemysnake",objectrenderlist)
                 snakespawntimer=0
@@ -308,7 +331,7 @@ if __name__=="__main__":
                 generateobject("enemydragon",objectrenderlist)
                 dragontimer = 0
                 dragonspawncounter = random.randint(180,420)
-            if crittertimer >= critterspawncounter:
+            if crittertimer >= critterspawncounter and stage < 1:
                 generateobject("critter",objectrenderlist)
                 crittertimer=0
                 critterspawncounter=random.randint(180,420)
@@ -317,28 +340,28 @@ if __name__=="__main__":
                 if objectrender.offscreen():
                     objectdeletelist.append(objectrender)
                 if objectrender.outofhealth():
-                    if objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big":
+                    if (objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big") and objectrender.attacker != "enemymeteor":
                         maincharacter.score += 3
-                    elif objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
+                    elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon") and objectrender.attacker != "enemymeteor":
                         maincharacter.score += 1
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
                 if objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
                     if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
-                        objectrender.losehealth()
+                        objectrender.losehealth(1,"weapon")
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
-                        maincharacter.losehealth()
+                        maincharacter.losehealth(1,objectrender.classtype)
                 if objectrender.classtype =="powerup":
-                    if objectrender.checkcollision(maincharacter.getobjectbody()):
+                    if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.health < maincharacter.healthcap:
                         objectdeletelist.append(objectrender)
                         maincharacter.restorehealth()
                 if objectrender.classtype == "enemymeteor":
                     for otherobject in objectrenderlist:
                         if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon") 
                             and objectrender.checkcollision(otherobject.getobjectbody())):
-                            otherobject.losehealth(otherobject.gethealth())  
+                            otherobject.losehealth(otherobject.gethealth(),objectrender.classtype)  
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
-                        maincharacter.losehealth(3)
+                        maincharacter.losehealth(3,"enemymeteor")
                     if objectrender.y >= GROUNDLEVEL - 40:
                         explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion"]["width"]/2),
                                                     objectrender.y,
@@ -353,9 +376,9 @@ if __name__=="__main__":
                         if otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon":
                             if objectrender.checkcollision(otherobject.getobjectbody()):
                                 if objectrender.classtype == "bigarrow":
-                                    otherobject.losehealth(2)
+                                    otherobject.losehealth(2,"bigarrow")
                                 else:
-                                    otherobject.losehealth()
+                                    otherobject.losehealth(1,"arrow")
                                 objectdeletelist.append(objectrender)
             
             if mouseclick:
@@ -410,7 +433,7 @@ if __name__=="__main__":
         tenthdigit = str((maincharacter.score//10)%10)
         hundredthdigit = str((maincharacter.score//100)%10)
 
-        if maincharacter.score >= 25:
+        if maincharacter.score >= 10:
             stage = 1
 
         #Rendering

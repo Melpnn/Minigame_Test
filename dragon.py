@@ -7,12 +7,14 @@ class dragonenemy(drawunit):
         self.iframe = 0
         self.speed = random.randint(2,4)
         self.health = 1
+        self.attacker = ""
     def gethealth(self):
         return self.health
-    def losehealth(self, damage = 1):
+    def losehealth(self, damage, classtype):
         if self.iframe == 0:
             self.health = self.health - damage
             self.iframe = 30
+            self.attacker = classtype
     def outofhealth(self):
         if self.health <= 0:
             return True
