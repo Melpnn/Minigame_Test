@@ -12,6 +12,8 @@ class slime(drawunit):
         self.powerupstatetimer = 0
         self.score = 0
         self.attacker = ""
+        self.snakeskilled = 0
+        self.dragonskilled = 0
     def gethealth(self):
         return self.health
     def getscore(self):

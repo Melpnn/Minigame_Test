@@ -342,8 +342,13 @@ if __name__=="__main__":
                 if objectrender.outofhealth():
                     if (objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big") and objectrender.attacker != "enemymeteor":
                         maincharacter.score += 3
+                        maincharacter.snakeskilled += 1
                     elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon") and objectrender.attacker != "enemymeteor":
                         maincharacter.score += 1
+                        if objectrender.classtype == "enemysnake":
+                            maincharacter.snakeskilled += 1
+                        if objectrender.classtype == "enemydragon":
+                            maincharacter.dragonskilled += 1
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
                 if objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
@@ -485,6 +490,7 @@ if __name__=="__main__":
                 screen.blit(pictures["exitmenu"]["surface"],(menuexitbutton.x,menuexitbutton.y))
                 for x in range(maincharacter.gethealth()):
                     screen.blit(pictures["heart"]["surface"],(130+30*x,80))
+
         else:
             screen.blit(pictures["gameoverpic"]["surface"],(0,0))
 

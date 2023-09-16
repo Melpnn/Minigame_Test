@@ -17,8 +17,7 @@ class snakeenemy(drawunit):
         if self.iframe == 0:
             self.health = self.health - damage
             self.iframe = 30
-            self.attacker = classtype
-
+            self.attacker = classtype           
     def outofhealth(self):
         if self.health <= 0:
             return True
