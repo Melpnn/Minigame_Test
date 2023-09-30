@@ -1,27 +1,40 @@
 from drawunit import drawunit
+import pygame
 
 class threedigittextbox(drawunit):
-    def __init__(self,x,y,width,height,classtype,transparency,value):
+    def __init__(self,x,y,width,height,classtype,value):
         drawunit.__init__(self,x,y,width,height,classtype)       
-        self.transparency = transparency
         self.value = value
+        self.dictionaryupdate() 
+    def dictionaryupdate(self):
         self.valuedictionary = {
             "SingleDigit" : {
-                "width" : 1/4 * width,
-                "height" : height,
-                "coordinates" : ((x + 11*width/16),y),
-                "value" : value%10
+                "width" : 1/4 * self.width,
+                "height" : self.height,
+                "coordinates" : ((self.x + 11*self.width/16),self.y),
+                "value" : self.value%10
             },
             "TenthDigit" : {
-                "width" : 1/4 * width,
-                "height" : height,
-                "coordinates" :((x + 3*width/8),y),
-                "value" : (value//10)%10
+                "width" : 1/4 * self.width,
+                "height" : self.height,
+                "coordinates" :((self.x + 3*self.width/8),self.y),
+                "value" : (self.value//10)%10
             },        
             "HundredthDigit" : {
-                "width" : 1/4 * width,
-                "height" : height,
-                "coordinates" : ((x + width/16),y),
-                "value" : (value//100)%10
-            }            
+                "width" : 1/4 * self.width,
+                "height" : self.height,
+                "coordinates" : ((self.x + self.width/16),self.y),
+                "value" : (self.value//100)%10
+            }                        
         }
+    def drawobject(self,screen,pictures):
+        screen.blit(pygame.transform.scale(pictures[str(self.valuedictionary["HundredthDigit"]["value"])]["surface"],
+                                           (self.valuedictionary["HundredthDigit"]["width"],self.valuedictionary["HundredthDigit"]["height"])),
+                    self.valuedictionary["HundredthDigit"]["coordinates"])
+        screen.blit(pygame.transform.scale(pictures[str(self.valuedictionary["TenthDigit"]["value"])]["surface"],
+                                           (self.valuedictionary["TenthDigit"]["width"],self.valuedictionary["TenthDigit"]["height"])),
+                    self.valuedictionary["TenthDigit"]["coordinates"])
+        screen.blit(pygame.transform.scale(pictures[str(self.valuedictionary["SingleDigit"]["value"])]["surface"],
+                                           (self.valuedictionary["SingleDigit"]["width"],self.valuedictionary["SingleDigit"]["height"])),
+                    self.valuedictionary["SingleDigit"]["coordinates"])
+   
