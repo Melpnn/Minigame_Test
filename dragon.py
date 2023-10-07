@@ -2,12 +2,13 @@ from drawunit import drawunit
 import random
 
 class dragonenemy(drawunit):
-    def __init__(self,x,y,width,height,classtype):
+    def __init__(self,x,y,width,height,classtype,experience):
         drawunit.__init__(self,x,y,width,height,classtype)
         self.iframe = 0
         self.speed = random.randint(2,4)
         self.health = 1
         self.attacker = ""
+        self.experience = experience
     def gethealth(self):
         return self.health
     def losehealth(self, damage, classtype):

@@ -25,13 +25,13 @@ def generateobject(classtype,objectrenderlist):
         if random.randint(0,100) <= 30:
             snakehitpoint = 5
             snaketype = "Big"
-        snake=snakeenemy(600,193,pictures["enemysnake"]["width"],pictures["enemysnake"]["height"],"enemysnake",snakehitpoint,snaketype)
+        snake=snakeenemy(600,193,pictures["enemysnake"]["width"],pictures["enemysnake"]["height"],"enemysnake",snakehitpoint,snaketype,5)
         objectrenderlist.append(snake)
     elif classtype == "enemymeteor":       
         meteor = meteors(random.randint(50,550),-100,pictures["enemymeteor"]["width"],pictures["enemymeteor"]["height"],"enemymeteor")
         objectrenderlist.append(meteor)
     elif classtype == "enemydragon":
-        dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon")
+        dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon",10)
         objectrenderlist.append(dragon)
     elif classtype == "critter":
         bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
@@ -234,6 +234,8 @@ if __name__=="__main__":
     scoreboard = threedigittextbox(420,0,180,60,"textbox",0)
     dragonkc =  threedigittextbox(445,90,120,40,"textbox",0)
     snakekc = threedigittextbox(445,50,120,40,"textbox",0)
+    playerlevel = threedigittextbox(10,50,75,25,"textbox",0)
+    menulevel = threedigittextbox(175,10,120,40,"textbox",0)
 
     #Spawn Timers
     snakespawntimer=0
@@ -256,10 +258,7 @@ if __name__=="__main__":
     backgroundx = 0
     background2x = 600
 
-
-
     stage = 0
-
     
     while True:
         for event in pygame.event.get():
@@ -351,15 +350,18 @@ if __name__=="__main__":
                         scoreboard.dictionaryupdate()
                         snakekc.value += 1
                         snakekc.dictionaryupdate()
+                        maincharacter.updateexperience(objectrender.experience)
                     elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon") and objectrender.attacker != "enemymeteor":
                         scoreboard.value += 1
                         scoreboard.dictionaryupdate()
                         if objectrender.classtype =="enemydragon":
                             dragonkc.value += 1
                             dragonkc.dictionaryupdate()
+                            maincharacter.updateexperience(objectrender.experience)
                         elif(objectrender.classtype == "enemysnake"):
                             snakekc.value +=1
                             snakekc.dictionaryupdate()
+                            maincharacter.updateexperience(objectrender.experience)
                     objectdeletelist.append(objectrender)
                 objectrender.frameupdate()
                 if objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
@@ -426,6 +428,8 @@ if __name__=="__main__":
                     print("Unknown Error")
 
             maincharacter.frameupdate()  
+            playerlevel.frameupdate(maincharacter.level)
+            menulevel.frameupdate(maincharacter.level)
 
             sword.frameupdate(maincharacter.getposition(),objectrenderlist)
 
@@ -460,6 +464,7 @@ if __name__=="__main__":
             screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
             screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
             scoreboard.drawobject(screen,pictures)
+            playerlevel.drawobject(screen,pictures)
             if paused == False:
                 screen.blit(pictures["pause"]["surface"],(pausebutton.x,pausebutton.y))
             for x in range(maincharacter.gethealth()):
@@ -497,6 +502,7 @@ if __name__=="__main__":
                     screen.blit(pictures["heart"]["surface"],(130+30*x,80))
                 dragonkc.drawobject(screen,pictures)
                 snakekc.drawobject(screen,pictures)
+                menulevel.drawobject(screen,pictures)
 
         else:
             screen.blit(pictures["gameoverpic"]["surface"],(0,0))

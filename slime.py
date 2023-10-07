@@ -12,8 +12,9 @@ class slime(drawunit):
         self.powerupstatetimer = 0
         self.score = 0
         self.attacker = ""
-        self.snakeskilled = 0
-        self.dragonskilled = 0
+        self.level = 0
+        self.experiencecap = 25
+        self.currentexperience = 0 
     def gethealth(self):
         return self.health
     def getscore(self):
@@ -24,6 +25,12 @@ class slime(drawunit):
         return self.jumpstate
     def getjumpheight(self):
         return (1/20)*(self.jumpframe)*(self.jumpframe - 120)
+    def updateexperience(self,expgain):
+        self.currentexperience += expgain  
+        if self.currentexperience >= self.experiencecap:
+            self.level += 1
+            self.experiencecap += 50
+            self.currentexperience = 0
     def restorehealth(self):
         if self.health < self.healthcap:
             self.health +=1

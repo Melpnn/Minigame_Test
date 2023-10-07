@@ -37,4 +37,7 @@ class threedigittextbox(drawunit):
         screen.blit(pygame.transform.scale(pictures[str(self.valuedictionary["SingleDigit"]["value"])]["surface"],
                                            (self.valuedictionary["SingleDigit"]["width"],self.valuedictionary["SingleDigit"]["height"])),
                     self.valuedictionary["SingleDigit"]["coordinates"])
-   
+        
+    def frameupdate(self,value):
+        self.value = value
+        self.dictionaryupdate()
