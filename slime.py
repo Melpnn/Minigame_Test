@@ -25,6 +25,8 @@ class slime(drawunit):
         return self.jumpstate
     def getjumpheight(self):
         return (1/20)*(self.jumpframe)*(self.jumpframe - 120)
+    def getexppercent(self):
+        return self.currentexperience/self.experiencecap
     def updateexperience(self,expgain):
         self.currentexperience += expgain  
         if self.currentexperience >= self.experiencecap:

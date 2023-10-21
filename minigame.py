@@ -12,6 +12,7 @@ from weapon import weapon
 from critters import critters
 from explosion import explosion
 from textbox import threedigittextbox
+from displaybar import displaybar
 from pygame.locals import * 
 
 GROUNDLEVEL = 263
@@ -196,6 +197,12 @@ if __name__=="__main__":
             "dimensions" :    (140,40),
             "width"  :        140,
             "height" :        40, }, 
+        "expbar" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "expbar_background.jpg")),(550,10)),
+            "dimensions" :    (550,10),
+            "width"  :        550,
+            "height" :        10,
+        }
     }
 
     for scorenumbers in range(10):
@@ -236,6 +243,7 @@ if __name__=="__main__":
     snakekc = threedigittextbox(445,50,120,40,"textbox",0)
     playerlevel = threedigittextbox(10,50,75,25,"textbox",0)
     menulevel = threedigittextbox(175,10,120,40,"textbox",0)
+    expbar = displaybar(25,330,550,10,"bar",(0,255,0))
 
     #Spawn Timers
     snakespawntimer=0
@@ -453,59 +461,63 @@ if __name__=="__main__":
             stage = 1
 
         #Rendering
-        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()):
-            if stage == 0:
-                screen.blit(pictures["background"]["surface"],(backgroundx,0))
-                screen.blit(pictures["background"]["surface"],(background2x,0))
-            elif stage == 1:
-                screen.blit(pictures["desert"]["surface"],(backgroundx,0))
-                screen.blit(pictures["desert"]["surface"],(background2x,0))
-            screen.blit(pictures["openmenu"]["surface"],(25,300))
-            screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
-            screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
-            scoreboard.drawobject(screen,pictures)
-            playerlevel.drawobject(screen,pictures)
-            if paused == False:
-                screen.blit(pictures["pause"]["surface"],(pausebutton.x,pausebutton.y))
-            for x in range(maincharacter.gethealth()):
-                screen.blit(pictures["heart"]["surface"],(10+30*x,10))
-            for x in range(maincharacter.getiframe()):
-                screen.blit(pictures["shield"]["surface"],maincharacter.getposition())
-            for objectrender in objectrenderlist:
-                if objectrender.classtype == "critter":
-                    screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())
-                elif objectrender.classtype == "enemydragon":
-                    screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
-                elif objectrender.classtype == "explosion":
-                    screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
-                elif objectrender.classtype == "enemysnake":
-                    screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
-                    heartoffsets=0
-                    for x in range(objectrender.gethealth()):
-                        if heartoffsets >= 0:
-                            heartoffsets = heartoffsets - x
-                        else:
-                            heartoffsets = heartoffsets + x
-                        if objectrender.gethealth()%2 == 1:
-                            screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
-                        else:
-                            screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
-                else:
-                    screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
-            if paused:
-                screen.blit(pictures["grayfilter"]["surface"],(0,0))
-                screen.blit(pictures["play"]["surface"],(playbutton.x,playbutton.y))
-            if openmenu:
-                screen.blit(pictures["menu"]["surface"],(0,0))
-                screen.blit(pictures["exitmenu"]["surface"],(menuexitbutton.x,menuexitbutton.y))
-                for x in range(maincharacter.gethealth()):
-                    screen.blit(pictures["heart"]["surface"],(130+30*x,80))
-                dragonkc.drawobject(screen,pictures)
-                snakekc.drawobject(screen,pictures)
-                menulevel.drawobject(screen,pictures)
+        if stage == 0:
+            screen.blit(pictures["background"]["surface"],(backgroundx,0))
+            screen.blit(pictures["background"]["surface"],(background2x,0))
+        elif stage == 1:
+            screen.blit(pictures["desert"]["surface"],(backgroundx,0))
+            screen.blit(pictures["desert"]["surface"],(background2x,0))
+        
+        expbar.drawobject(screen,pictures,maincharacter.getexppercent())
 
-        else:
-            screen.blit(pictures["gameoverpic"]["surface"],(0,0))
+        screen.blit(pictures["openmenu"]["surface"],(25,300))
+        screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
+        screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
+        scoreboard.drawobject(screen,pictures)
+        playerlevel.drawobject(screen,pictures)
+        if paused == False:
+            screen.blit(pictures["pause"]["surface"],(pausebutton.x,pausebutton.y))
+        for x in range(maincharacter.gethealth()):
+            screen.blit(pictures["heart"]["surface"],(10+30*x,10))
+        for x in range(maincharacter.getiframe()):
+            screen.blit(pictures["shield"]["surface"],maincharacter.getposition())
+        for objectrender in objectrenderlist:
+            if objectrender.classtype == "critter":
+                screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())
+            elif objectrender.classtype == "enemydragon":
+                screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
+            elif objectrender.classtype == "explosion":
+                screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
+            elif objectrender.classtype == "enemysnake":
+                screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
+                heartoffsets=0
+                for x in range(objectrender.gethealth()):
+                    if heartoffsets >= 0:
+                        heartoffsets = heartoffsets - x
+                    else:
+                        heartoffsets = heartoffsets + x
+                    if objectrender.gethealth()%2 == 1:
+                        screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
+                    else:
+                        screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
+            else:
+                screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
+
+        if paused:
+            screen.blit(pictures["grayfilter"]["surface"],(0,0))
+            screen.blit(pictures["play"]["surface"],(playbutton.x,playbutton.y))
+
+        if openmenu:
+            screen.blit(pictures["menu"]["surface"],(0,0))
+            screen.blit(pictures["exitmenu"]["surface"],(menuexitbutton.x,menuexitbutton.y))
+            for x in range(maincharacter.gethealth()):
+                screen.blit(pictures["heart"]["surface"],(130+30*x,80))
+            dragonkc.drawobject(screen,pictures)
+            snakekc.drawobject(screen,pictures)
+            menulevel.drawobject(screen,pictures)
+
+        if maincharacter.gethealth() <= 0 or maincharacter.offscreen():
+            screen.blit(pictures["grayfilter"]["surface"],(0,0))
 
         #Timer
         pygame.display.flip()

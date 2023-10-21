@@ -1,3 +1,5 @@
+#update drawobject and textbox so that the textbox does not keep track of the value (ex: score)
+
 from drawunit import drawunit
 import pygame
 
