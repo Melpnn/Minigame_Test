@@ -3,6 +3,7 @@ import os
 import random
 
 from drawunit import drawunit
+from worldlevel import worldlevel
 from snake import snakeenemy
 from meteor import meteors
 from dragon import dragonenemy
@@ -102,13 +103,18 @@ if __name__=="__main__":
             "dimensions" :    (59,59),
             "width"  :        59,
             "height" :        59, },            
-        "background" :  {
+        "bgforest" :  {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","night_background.jpg")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
             "width"  :        BGWIDTH,
             "height" :        BGHEIGHT, },            
-        "desert" :  {
+        "bgdesert" :  {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","desert_background.jpg")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },
+        "bgice" :  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","ice_background.jpg")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
             "width"  :        BGWIDTH,
             "height" :        BGHEIGHT, },
@@ -127,11 +133,16 @@ if __name__=="__main__":
             "dimensions" :    (25,25),
             "width"  :        25,
             "height" :        25, },              
-        "powerup" :   {
+        "healthpowerup" :   {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "healthpotion.png")),(20,30)),
             "dimensions" :    (20,30),
             "width"  :        20,
-            "height" :        30, },         
+            "height" :        30, },    
+        "heartpowerup" : {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heartpotion.png")),(20,30)),
+            "dimensions" :    (20,30),
+            "width"  :        20,
+            "height" :        30, },           
         "coin" :     {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
             "dimensions" :    (25,50),
@@ -244,7 +255,7 @@ if __name__=="__main__":
     playerlevel = threedigittextbox(10,50,75,25,"textbox",0)
     menulevel = threedigittextbox(175,10,120,40,"textbox",0)
     expbar = displaybar(25,330,550,10,"bar",(0,255,0))
-
+    
     #Spawn Timers
     snakespawntimer=0
     snakespawncounter=random.randint(120,360)
@@ -255,18 +266,18 @@ if __name__=="__main__":
     dragontimer = 0
     dragonspawncounter=random.randint(180,420)
 
-    objectrenderlist=[]
+    objectrenderlist = []
+
+    levelone = worldlevel(["enemysnake","critter"],[(120,360),(180,420)],pictures["bgforest"]["surface"])
+    leveltwo = worldlevel([],[],pictures["bgdesert"]["surface"]) 
+    levelthree = worldlevel([],[],pictures["bgice"]["surface"]) 
+    worldlist = [levelone,leveltwo,levelthree]
+    stage = 0
 
     explosioncoordinateslist = []
     for rows in range(2):
         for columns in range(5):
             explosioncoordinateslist.append((columns*60,rows*60,59,59))
-
-    backgroundtimer=0
-    backgroundx = 0
-    background2x = 600
-
-    stage = 0
     
     while True:
         for event in pygame.event.get():
@@ -377,10 +388,14 @@ if __name__=="__main__":
                         objectrender.losehealth(1,"weapon")
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         maincharacter.losehealth(1,objectrender.classtype)
-                if objectrender.classtype =="powerup":
+                if objectrender.classtype =="healthpowerup":
                     if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.health < maincharacter.healthcap:
                         objectdeletelist.append(objectrender)
                         maincharacter.restorehealth()
+                if objectrender.classtype =="heartpowerup":
+                    if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.healthcap < 7:
+                        objectdeletelist.append(objectrender)
+                        maincharacter.healthcap += 1
                 if objectrender.classtype == "enemymeteor":
                     for otherobject in objectrenderlist:
                         if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon") 
@@ -420,14 +435,23 @@ if __name__=="__main__":
 
             for objectrender in objectdeletelist:
                 if (objectrender.classtype == "enemysnake" and 
-                    not(objectrender.getx() < -150) and random.randint(1,100) >= 50):
-                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["powerup"]["width"]/2),
-                                  objectrender.gety() + (objectrender.height - pictures["powerup"]["height"]),
-                                  pictures["powerup"]["width"],
-                                  pictures["powerup"]["height"],
-                                  "powerup",
+                    not(objectrender.getx() < -150) and random.randint(1,100) >= 75):
+                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["healthpowerup"]["width"]/2),
+                                  objectrender.gety() + (objectrender.height - pictures["healthpowerup"]["height"]),
+                                  pictures["healthpowerup"]["width"],
+                                  pictures["healthpowerup"]["height"],
+                                  "healthpowerup",
                                   600)
                     objectrenderlist.append(power)
+                elif (objectrender.classtype == "enemydragon" and 
+                    not(objectrender.getx() < -150) and random.randint(1,100) >= 80):
+                    heartpotion = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["heartpowerup"]["width"]/2),
+                                  objectrender.gety() + (objectrender.height - pictures["heartpowerup"]["height"]),
+                                  pictures["heartpowerup"]["width"],
+                                  pictures["heartpowerup"]["height"],
+                                  "heartpowerup",
+                                  300)
+                    objectrenderlist.append(heartpotion)
                 try:
                     objectrenderlist.remove(objectrender)     
                 except ValueError:
@@ -435,38 +459,25 @@ if __name__=="__main__":
                 except:
                     print("Unknown Error")
 
+            worldlist[stage].frameupdate()
             maincharacter.frameupdate()  
             playerlevel.frameupdate(maincharacter.level)
             menulevel.frameupdate(maincharacter.level)
-
             sword.frameupdate(maincharacter.getposition(),objectrenderlist)
 
-            if backgroundtimer > 2:
-                backgroundx-=1
-                background2x-=1
-                if backgroundx < -600:
-                    backgroundx=600 
-                elif background2x < -600:
-                    background2x=600
-
-                backgroundtimer=0
-
-            backgroundtimer += 1
             snakespawntimer = snakespawntimer+1
             crittertimer += 1
             meteortimer += 1
             dragontimer += 1
 
-        if scoreboard.value >= 10:
+        if scoreboard.value >= 10 and scoreboard.value < 20:
             stage = 1
+        elif scoreboard.value >= 20:
+            stage = 2
 
         #Rendering
-        if stage == 0:
-            screen.blit(pictures["background"]["surface"],(backgroundx,0))
-            screen.blit(pictures["background"]["surface"],(background2x,0))
-        elif stage == 1:
-            screen.blit(pictures["desert"]["surface"],(backgroundx,0))
-            screen.blit(pictures["desert"]["surface"],(background2x,0))
+
+        worldlist[stage].drawobject(screen)
         
         expbar.drawobject(screen,pictures,maincharacter.getexppercent())
 

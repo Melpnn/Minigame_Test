@@ -10,3 +10,5 @@ class powerup(drawunit):
         self.timer-=1
         if self.timer <= 0:
             self.x = 650
+        if self.y <= 233:
+            self.changey(1)
