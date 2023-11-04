@@ -252,25 +252,15 @@ if __name__=="__main__":
     scoreboard = threedigittextbox(420,0,180,60,"textbox",0)
     dragonkc =  threedigittextbox(445,90,120,40,"textbox",0)
     snakekc = threedigittextbox(445,50,120,40,"textbox",0)
-    playerlevel = threedigittextbox(10,50,75,25,"textbox",0)
+    playerlevel = threedigittextbox(500,305,75,25,"textbox",0)
     menulevel = threedigittextbox(175,10,120,40,"textbox",0)
     expbar = displaybar(25,330,550,10,"bar",(0,255,0))
-    
-    #Spawn Timers
-    snakespawntimer=0
-    snakespawncounter=random.randint(120,360)
-    crittertimer=0
-    critterspawncounter=random.randint(180,420)
-    meteortimer = 0
-    meteorspawncounter=random.randint(180,300)
-    dragontimer = 0
-    dragonspawncounter=random.randint(180,420)
 
     objectrenderlist = []
 
-    levelone = worldlevel(["enemysnake","critter"],[(120,360),(180,420)],pictures["bgforest"]["surface"])
-    leveltwo = worldlevel([],[],pictures["bgdesert"]["surface"]) 
-    levelthree = worldlevel([],[],pictures["bgice"]["surface"]) 
+    levelone = worldlevel(["enemysnake","critter","enemymeteor"],[(120,360),(180,420),(180,300)],pictures["bgforest"]["surface"])
+    leveltwo = worldlevel(["enemydragon","enemysnake","enemymeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
+    levelthree = worldlevel(["enemysnake","enemymeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
     stage = 0
 
@@ -343,22 +333,6 @@ if __name__=="__main__":
                 maincharacter.changex(-1)
                 if maincharacter.offscreen():
                     maincharacter.changex(1)
-            if snakespawntimer >= snakespawncounter:
-                generateobject("enemysnake",objectrenderlist)
-                snakespawntimer=0
-                snakespawncounter=random.randint(0,180)
-            if meteortimer >= meteorspawncounter:
-                generateobject("enemymeteor",objectrenderlist)
-                meteortimer = 0
-                meteorspawncounter = random.randint(180,360)
-            if dragontimer >= dragonspawncounter and stage >= 1:
-                generateobject("enemydragon",objectrenderlist)
-                dragontimer = 0
-                dragonspawncounter = random.randint(180,420)
-            if crittertimer >= critterspawncounter and stage < 1:
-                generateobject("critter",objectrenderlist)
-                crittertimer=0
-                critterspawncounter=random.randint(180,420)
 
             for objectrender in objectrenderlist:
                 if objectrender.offscreen():
@@ -459,16 +433,14 @@ if __name__=="__main__":
                 except:
                     print("Unknown Error")
 
-            worldlist[stage].frameupdate()
+            spawnlist = worldlist[stage].frameupdate()
             maincharacter.frameupdate()  
             playerlevel.frameupdate(maincharacter.level)
             menulevel.frameupdate(maincharacter.level)
             sword.frameupdate(maincharacter.getposition(),objectrenderlist)
 
-            snakespawntimer = snakespawntimer+1
-            crittertimer += 1
-            meteortimer += 1
-            dragontimer += 1
+            for classtype in spawnlist:
+                generateobject(classtype,objectrenderlist)
 
         if scoreboard.value >= 10 and scoreboard.value < 20:
             stage = 1
@@ -484,6 +456,7 @@ if __name__=="__main__":
         screen.blit(pictures["openmenu"]["surface"],(25,300))
         screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
         screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
+        screen.blit(pictures["level_text"]["surface"],(435,295))
         scoreboard.drawobject(screen,pictures)
         playerlevel.drawobject(screen,pictures)
         if paused == False:
