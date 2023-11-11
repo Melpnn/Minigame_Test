@@ -219,7 +219,7 @@ if __name__=="__main__":
     for scorenumbers in range(10):
         pictures[str(scorenumbers)] = {
             "surface" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),(60,60)),
-            "dimensions" :    (60,60),
+            "dimensions" : (60,60),
             "width" :   60,
             "height" :  60, }
 
@@ -241,6 +241,7 @@ if __name__=="__main__":
     weaponswap = False
     paused = False
     openmenu = False 
+    loading = False
 
     #Loading Objects
     maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["width"],pictures["slimepic"]["height"],"slime",4)
@@ -263,6 +264,8 @@ if __name__=="__main__":
     levelthree = worldlevel(["enemysnake","enemymeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
     stage = 0
+    cstage = 0
+    loadingtimer = 0
 
     explosioncoordinateslist = []
     for rows in range(2):
@@ -323,14 +326,14 @@ if __name__=="__main__":
         if ikey_keypress:
             openmenu = not openmenu
             ikey_keypress = False
-        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()) and not (paused or openmenu):
+        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()) and not (paused or openmenu) and not (loading):
             objectdeletelist=[]
             if rArrow_keypress:
-                maincharacter.changex(1)
+                maincharacter.changex(maincharacter.speed)
                 if maincharacter.offscreen():
                     maincharacter.changex(-1)
             if lArrow_keypress:
-                maincharacter.changex(-1)
+                maincharacter.changex(-maincharacter.speed)
                 if maincharacter.offscreen():
                     maincharacter.changex(1)
 
@@ -444,15 +447,35 @@ if __name__=="__main__":
 
         if scoreboard.value >= 10 and scoreboard.value < 20:
             stage = 1
+            if stage != cstage:
+                cstage = stage
+                loading = True
+                loadingtimer = 60
+                objectrenderlist.clear()
+                maincharacter.x = 0
+                maincharacter.y = GROUNDLEVEL - 60
+
         elif scoreboard.value >= 20:
             stage = 2
-
+            if stage != cstage:
+                cstage = stage
+                loading = True
+                loadingtimer = 60
+                objectrenderlist.clear()
+                maincharacter.x = 0
+                maincharacter.y = GROUNDLEVEL - 60
+        
+        if loadingtimer > 0:
+            loadingtimer -= 1
+        else:
+            loading = False
+            
         #Rendering
 
         worldlist[stage].drawobject(screen)
-        
-        expbar.drawobject(screen,pictures,maincharacter.getexppercent())
 
+        expbar.drawobject(screen,pictures,maincharacter.getexppercent())
+        
         screen.blit(pictures["openmenu"]["surface"],(25,300))
         screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
         screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
@@ -499,6 +522,9 @@ if __name__=="__main__":
             dragonkc.drawobject(screen,pictures)
             snakekc.drawobject(screen,pictures)
             menulevel.drawobject(screen,pictures)
+        
+        if loading:
+            screen.blit(pictures["loadingscreen"]["surface"],(0,0))
 
         if maincharacter.gethealth() <= 0 or maincharacter.offscreen():
             screen.blit(pictures["grayfilter"]["surface"],(0,0))

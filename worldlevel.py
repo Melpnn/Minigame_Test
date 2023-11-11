@@ -36,5 +36,7 @@ class worldlevel():
         screen.blit(self.background,(self.backgroundx,0))
         screen.blit(self.background,(self.background2x,0))
     
+
+    
     #def spawnobject(self):
         #for x in range (len(self.entitylist)):

@@ -15,6 +15,7 @@ class slime(drawunit):
         self.level = 0
         self.experiencecap = 25
         self.currentexperience = 0 
+        self.speed = 1
     def gethealth(self):
         return self.health
     def getscore(self):
@@ -33,6 +34,8 @@ class slime(drawunit):
             self.level += 1
             self.experiencecap += 50
             self.currentexperience = 0
+            if self.speed <= 3:
+                self.speed += 0.5
     def restorehealth(self):
         if self.health < self.healthcap:
             self.health +=1
@@ -45,7 +48,6 @@ class slime(drawunit):
         self.jumpstate = True
         self.jumpframe = 0
     def setjumppower(self):
-        #self.powerupstatetimer = 180
         return None
     def frameupdate(self):
         if self.powerupstatetimer > 0:
