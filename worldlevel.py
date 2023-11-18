@@ -24,7 +24,7 @@ class worldlevel():
         returnlist = []
         for counterindex in range (len(self.counterlist)):
             self.counterlist[counterindex]+=1
-            if self.counterlist[counterindex] >= self.spawntimerlist[counterindex]:
+            if self.counterlist[counterindex] >= self.spawntimerlist[counterindex] and self.spawntimerlist[counterindex] != -1:
                 self.counterlist[counterindex] = 0
                 randmin = self.timerlist[counterindex][0]
                 randmax = self.timerlist[counterindex][1]

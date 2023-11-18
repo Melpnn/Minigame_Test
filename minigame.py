@@ -7,6 +7,7 @@ from worldlevel import worldlevel
 from snake import snakeenemy
 from meteor import meteors
 from dragon import dragonenemy
+from ghost import ghostenemy
 from powerup import powerup
 from slime import slime
 from weapon import weapon
@@ -35,6 +36,9 @@ def generateobject(classtype,objectrenderlist):
     elif classtype == "enemydragon":
         dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon",10)
         objectrenderlist.append(dragon)
+    elif classtype == "enemyghost":
+        ghost = ghostenemy(400,193,pictures["enemyghost"]["width"],pictures["enemyghost"]["height"],"enemyghost",5)
+        objectrenderlist.append(ghost)
     elif classtype == "critter":
         bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
         objectrenderlist.append(bunny)
@@ -87,7 +91,12 @@ if __name__=="__main__":
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","dragon.png")),(120,40)),
             "dimensions" :    (120,40),
             "width"  :        120,
-            "height" :        40, },               
+            "height" :        40, },        
+        "enemyghost":  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","ghost.png")),(35,70)),
+            "dimensions" :    (35,70),
+            "width"  :        35,
+            "height" :        70, },           
         "gameoverpic" : {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
@@ -115,6 +124,11 @@ if __name__=="__main__":
             "height" :        BGHEIGHT, },
         "bgice" :  {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","ice_background.jpg")),(BGWIDTH,BGHEIGHT)),
+            "dimensions" :    (BGWIDTH,BGHEIGHT),
+            "width"  :        BGWIDTH,
+            "height" :        BGHEIGHT, },
+        "bgcastle" :  {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","castle_background.jpg")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
             "width"  :        BGWIDTH,
             "height" :        BGHEIGHT, },
@@ -258,8 +272,9 @@ if __name__=="__main__":
     expbar = displaybar(25,330,550,10,"bar",(0,255,0))
 
     objectrenderlist = []
+    generateobject("enemyghost",objectrenderlist)
 
-    levelone = worldlevel(["enemysnake","critter","enemymeteor"],[(120,360),(180,420),(180,300)],pictures["bgforest"]["surface"])
+    levelone = worldlevel(["enemysnake","critter","enemymeteor","enemyghost"],[(120,360),(180,420),(180,300),(-1,-1)],pictures["bgcastle"]["surface"])
     leveltwo = worldlevel(["enemydragon","enemysnake","enemymeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
     levelthree = worldlevel(["enemysnake","enemymeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
@@ -359,7 +374,11 @@ if __name__=="__main__":
                             snakekc.dictionaryupdate()
                             maincharacter.updateexperience(objectrender.experience)
                     objectdeletelist.append(objectrender)
-                objectrender.frameupdate()
+                if objectrender.classtype == "enemyghost":
+                    objectrender.frameupdate(objectrenderlist)
+                else:
+                    objectrender.frameupdate()
+                #TO DO: WARNING - FRAME UPDATE CHANGES RENDER LIST 
                 if objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
                     if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
                         objectrender.losehealth(1,"weapon")
@@ -444,7 +463,7 @@ if __name__=="__main__":
 
             for classtype in spawnlist:
                 generateobject(classtype,objectrenderlist)
-
+        
         if scoreboard.value >= 10 and scoreboard.value < 20:
             stage = 1
             if stage != cstage:
@@ -469,6 +488,8 @@ if __name__=="__main__":
             loadingtimer -= 1
         else:
             loading = False
+
+        
             
         #Rendering
 
