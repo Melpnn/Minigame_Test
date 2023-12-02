@@ -13,7 +13,10 @@ class combatant(drawunit):
         if self.iframe == 0:
             self.health = self.health - damage
             self.iframe = 30
-            self.attacker = classtype           
+            self.attacker = classtype    
+    def frameupdate(self):
+        if self.iframe > 0:
+            self.iframe -= 1       
     def outofhealth(self):
         if self.health <= 0:
             return True

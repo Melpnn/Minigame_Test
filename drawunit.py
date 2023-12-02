@@ -56,5 +56,7 @@ class drawunit:
             return True
     def outofhealth(self):
         return False
+    def getcoordinates(self):
+        return (0,0,self.width,self.height)
     
         

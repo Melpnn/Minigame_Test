@@ -30,14 +30,14 @@ def generateobject(classtype,objectrenderlist):
             snaketype = "Big"
         snake=snakeenemy(600,193,pictures["enemysnake"]["width"],pictures["enemysnake"]["height"],"enemysnake",snakehitpoint,snaketype,5)
         objectrenderlist.append(snake)
-    elif classtype == "enemymeteor":       
-        meteor = meteors(random.randint(50,550),-100,pictures["enemymeteor"]["width"],pictures["enemymeteor"]["height"],"enemymeteor")
+    elif classtype == "neutralmeteor":       
+        meteor = meteors(random.randint(50,550),-100,pictures["neutralmeteor"]["width"],pictures["neutralmeteor"]["height"],"neutralmeteor")
         objectrenderlist.append(meteor)
     elif classtype == "enemydragon":
         dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon",10)
         objectrenderlist.append(dragon)
     elif classtype == "enemyghost":
-        ghost = ghostenemy(400,193,pictures["enemyghost"]["width"],pictures["enemyghost"]["height"],"enemyghost",5)
+        ghost = ghostenemy(500,193,pictures["enemyghost"]["width"],pictures["enemyghost"]["height"],"enemyghost",50,20,1,1)
         objectrenderlist.append(ghost)
     elif classtype == "critter":
         bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
@@ -82,7 +82,7 @@ if __name__=="__main__":
             "dimensions" :    (70,70),
             "width"  :        70,
             "height" :        70, },        
-        "enemymeteor": {
+        "neutralmeteor": {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),(30,80)),
             "dimensions" :    (30,80),
             "width"  :        30,
@@ -93,10 +93,10 @@ if __name__=="__main__":
             "width"  :        120,
             "height" :        40, },        
         "enemyghost":  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","ghost.png")),(35,70)),
-            "dimensions" :    (35,70),
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","ghost.png")),(35,60)),
+            "dimensions" :    (35,60),
             "width"  :        35,
-            "height" :        70, },           
+            "height" :        60, },           
         "gameoverpic" : {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(BGWIDTH,BGHEIGHT)),
             "dimensions" :    (BGWIDTH,BGHEIGHT),
@@ -162,6 +162,11 @@ if __name__=="__main__":
             "dimensions" :    (25,50),
             "width"  :        25,
             "height" :        50, },           
+        "enemywisp" :     {
+            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "wisp.png")),(20,20)),
+            "dimensions" :    (20,20),
+            "width"  :        20,
+            "height" :        20, },  
         "shield" :      {
             "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
             "dimensions" :    (69,69),
@@ -273,10 +278,11 @@ if __name__=="__main__":
 
     objectrenderlist = []
     generateobject("enemyghost",objectrenderlist)
+    ghostbosshpbar = displaybar(75,65,450,10,"bar",(150,0,0))
 
-    levelone = worldlevel(["enemysnake","critter","enemymeteor","enemyghost"],[(120,360),(180,420),(180,300),(-1,-1)],pictures["bgcastle"]["surface"])
-    leveltwo = worldlevel(["enemydragon","enemysnake","enemymeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
-    levelthree = worldlevel(["enemysnake","enemymeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
+    levelone = worldlevel(["enemysnake","critter","neutralmeteor","enemyghost"],[(120,360),(180,420),(180,300),(-1,-1)],pictures["bgcastle"]["surface"])
+    leveltwo = worldlevel(["enemydragon","enemysnake","neutralmeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
+    levelthree = worldlevel(["enemysnake","neutralmeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
     stage = 0
     cstage = 0
@@ -356,13 +362,13 @@ if __name__=="__main__":
                 if objectrender.offscreen():
                     objectdeletelist.append(objectrender)
                 if objectrender.outofhealth():
-                    if (objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big") and objectrender.attacker != "enemymeteor":
+                    if (objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big") and objectrender.attacker != "neutralmeteor":
                         scoreboard.value += 3
                         scoreboard.dictionaryupdate()
                         snakekc.value += 1
                         snakekc.dictionaryupdate()
                         maincharacter.updateexperience(objectrender.experience)
-                    elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon") and objectrender.attacker != "enemymeteor":
+                    elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon") and objectrender.attacker != "neutralmeteor":
                         scoreboard.value += 1
                         scoreboard.dictionaryupdate()
                         if objectrender.classtype =="enemydragon":
@@ -379,7 +385,7 @@ if __name__=="__main__":
                 else:
                     objectrender.frameupdate()
                 #TO DO: WARNING - FRAME UPDATE CHANGES RENDER LIST 
-                if objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon":
+                if "enemy" in objectrender.classtype:
                     if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
                         objectrender.losehealth(1,"weapon")
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
@@ -392,13 +398,13 @@ if __name__=="__main__":
                     if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.healthcap < 7:
                         objectdeletelist.append(objectrender)
                         maincharacter.healthcap += 1
-                if objectrender.classtype == "enemymeteor":
+                if objectrender.classtype == "neutralmeteor":
                     for otherobject in objectrenderlist:
                         if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon") 
                             and objectrender.checkcollision(otherobject.getobjectbody())):
                             otherobject.losehealth(otherobject.gethealth(),objectrender.classtype)  
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
-                        maincharacter.losehealth(3,"enemymeteor")
+                        maincharacter.losehealth(3,"neutralmeteor")
                     if objectrender.y >= GROUNDLEVEL - 40:
                         explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion"]["width"]/2),
                                                     objectrender.y,
@@ -410,7 +416,7 @@ if __name__=="__main__":
                         objectdeletelist.append(objectrender)
                 if  "arrow" in objectrender.classtype:
                     for otherobject in objectrenderlist:
-                        if otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon":
+                        if "enemy" in otherobject.classtype:
                             if objectrender.checkcollision(otherobject.getobjectbody()):
                                 if objectrender.classtype == "bigarrow":
                                     otherobject.losehealth(2,"bigarrow")
@@ -510,13 +516,7 @@ if __name__=="__main__":
         for x in range(maincharacter.getiframe()):
             screen.blit(pictures["shield"]["surface"],maincharacter.getposition())
         for objectrender in objectrenderlist:
-            if objectrender.classtype == "critter":
-                screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())
-            elif objectrender.classtype == "enemydragon":
-                screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
-            elif objectrender.classtype == "explosion":
-                screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
-            elif objectrender.classtype == "enemysnake":
+            if objectrender.classtype == "enemysnake":
                 screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
                 heartoffsets=0
                 for x in range(objectrender.gethealth()):
@@ -528,8 +528,9 @@ if __name__=="__main__":
                         screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
                     else:
                         screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
-            else:
-                screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
+            elif objectrender.classtype == "enemyghost":
+                ghostbosshpbar.drawobject(screen,pictures,objectrender.gethealthpercentage())
+            screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
 
         if paused:
             screen.blit(pictures["grayfilter"]["surface"],(0,0))
