@@ -28,16 +28,16 @@ def generateobject(classtype,objectrenderlist):
         if random.randint(0,100) <= 30:
             snakehitpoint = 5
             snaketype = "Big"
-        snake=snakeenemy(600,193,pictures["enemysnake"]["width"],pictures["enemysnake"]["height"],"enemysnake",snakehitpoint,snaketype,5)
+        snake=snakeenemy(600,193,pictures["enemysnake"]["dimensions"][0],pictures["enemysnake"]["dimensions"][1],"enemysnake",snakehitpoint,snaketype,5)
         objectrenderlist.append(snake)
     elif classtype == "neutralmeteor":       
-        meteor = meteors(random.randint(50,550),-100,pictures["neutralmeteor"]["width"],pictures["neutralmeteor"]["height"],"neutralmeteor")
+        meteor = meteors(random.randint(50,550),-100,pictures["neutralmeteor"]["dimensions"][0],pictures["neutralmeteor"]["dimensions"][1],"neutralmeteor")
         objectrenderlist.append(meteor)
     elif classtype == "enemydragon":
-        dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["width"],pictures["enemydragon"]["height"],"enemydragon",10)
+        dragon = dragonenemy(BGWIDTH-60,random.randint(34,108),pictures["enemydragon"]["dimensions"][0],pictures["enemydragon"]["dimensions"][1],"enemydragon",10)
         objectrenderlist.append(dragon)
     elif classtype == "enemyghost":
-        ghost = ghostenemy(500,193,pictures["enemyghost"]["width"],pictures["enemyghost"]["height"],"enemyghost",50,20,1,1)
+        ghost = ghostenemy(500,193,pictures["enemyghost"]["dimensions"][0],pictures["enemyghost"]["dimensions"][1],"enemyghost",50,20,1,1)
         objectrenderlist.append(ghost)
     elif classtype == "critter":
         bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
@@ -53,194 +53,131 @@ if __name__=="__main__":
 
     pictures={
         "slimepic" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),(60,60)),
-            "dimensions" :    (60,60),
-            "width"  :        60,
-            "height" :        60, },
+            "surface":        pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),
+            "dimensions" :    (60,60)},
         "swordpic" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),(50,50)),
-            "dimensions" :    (50,50),
-            "width"  :        50,
-            "height" :        50, },
+            "surface":        pygame.image.load(os.path.join("Game Images","sword(hitbox).png")),
+            "dimensions" :    (50,50)},
         "bowpic" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","bow.png")),(50,50)),
-            "dimensions" :    (50,50),
-            "width"  :        50,
-            "height" :        50, },           
+            "surface":        pygame.image.load(os.path.join("Game Images","bow.png")),
+            "dimensions" :    (50,50)},           
         "arrow" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),(30,10)),
-            "dimensions" :    (30,10),
-            "width"  :        30,
-            "height" :        10, },             
+            "surface":        pygame.image.load(os.path.join("Game Images","arrow(hitbox).png")),
+            "dimensions" :    (30,10)},             
         "bigarrow" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),(50,30)),
-            "dimensions" :    (50,30),
-            "width"  :        50,
-            "height" :        30, },               
+            "surface":        pygame.image.load(os.path.join("Game Images","superarrow(hitbox).png")),
+            "dimensions" :    (50,30)},               
         "enemysnake" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),(70,70)),
-            "dimensions" :    (70,70),
-            "width"  :        70,
-            "height" :        70, },        
+            "surface":        pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),
+            "dimensions" :    (70,70)}, 
         "neutralmeteor": {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),(30,80)),
-            "dimensions" :    (30,80),
-            "width"  :        30,
-            "height" :        80, },             
+            "surface":        pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),
+            "dimensions" :    (30,80)},             
         "enemydragon":  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","dragon.png")),(120,40)),
-            "dimensions" :    (120,40),
-            "width"  :        120,
-            "height" :        40, },        
+            "surface":        pygame.image.load(os.path.join("Game Images","dragon.png")),
+            "dimensions" :    (120,40)},        
         "enemyghost":  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","ghost.png")),(35,60)),
-            "dimensions" :    (35,60),
-            "width"  :        35,
-            "height" :        60, },           
+            "surface":        pygame.image.load(os.path.join("Game Images","ghost.png")),
+            "dimensions" :    (35,60)},           
         "gameoverpic" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","gameover.png")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },         
+            "surface":        pygame.image.load(os.path.join("Game Images","gameover.png")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},         
         "critter" :    {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),(653,422)),
-            "dimensions" :    (31,31),
-            "width"  :        31,
-            "height" :        31, },        
+            "surface":        pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),
+            "dimensions" :    (31,31)},        
         "explosion" :   {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),(300,120)), 
-            "dimensions" :    (59,59),
-            "width"  :        59,
-            "height" :        59, },            
+            "surface":        pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),
+            "dimensions" :    (59,59)},            
         "bgforest" :  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","night_background.jpg")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },            
+            "surface":        pygame.image.load(os.path.join("Game Images","night_background.jpg")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},            
         "bgdesert" :  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","desert_background.jpg")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },
+            "surface":        pygame.image.load(os.path.join("Game Images","desert_background.jpg")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},
         "bgice" :  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","ice_background.jpg")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },
+            "surface":        pygame.image.load(os.path.join("Game Images","ice_background.jpg")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},
         "bgcastle" :  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","castle_background.jpg")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },
+            "surface":        pygame.image.load(os.path.join("Game Images","castle_background.jpg")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},
         "loadingscreen" :  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","loadingscreen_background.jpg")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },        
+            "surface":        pygame.image.load(os.path.join("Game Images","loadingscreen_background.jpg")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},        
         "grayfilter":  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images","grayfilter.png")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },                  
+            "surface":        pygame.image.load(os.path.join("Game Images","grayfilter.png")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},                  
         "heart" :  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heart.png")),(25,25)),
-            "dimensions" :    (25,25),
-            "width"  :        25,
-            "height" :        25, },              
+            "surface":        pygame.image.load(os.path.join("Game Images", "heart.png")),
+            "dimensions" :    (25,25)},              
         "healthpowerup" :   {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "healthpotion.png")),(20,30)),
-            "dimensions" :    (20,30),
-            "width"  :        20,
-            "height" :        30, },    
+            "surface":        pygame.image.load(os.path.join("Game Images", "healthpotion.png")),
+            "dimensions" :    (20,30)},    
         "heartpowerup" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "heartpotion.png")),(20,30)),
-            "dimensions" :    (20,30),
-            "width"  :        20,
-            "height" :        30, },           
+            "surface":        pygame.image.load(os.path.join("Game Images", "heartpotion.png")),
+            "dimensions" :    (20,30)},
+        "attackpowerup" :     {
+            "surface":        pygame.image.load(os.path.join("Game Images", "coin.png")),
+            "dimensions" :    (25,50)},             
         "coin" :     {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "coin.png")),(25,50)),
-            "dimensions" :    (25,50),
-            "width"  :        25,
-            "height" :        50, },           
+            "surface":        pygame.image.load(os.path.join("Game Images", "coin.png")),
+            "dimensions" :    (25,50)},           
         "enemywisp" :     {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "wisp.png")),(20,20)),
-            "dimensions" :    (20,20),
-            "width"  :        20,
-            "height" :        20, },  
+            "surface":        pygame.image.load(os.path.join("Game Images", "wisp.png")),
+            "dimensions" :    (20,20)},  
         "shield" :      {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "shield.png")),(69,69)),
-            "dimensions" :    (69,69),
-            "width"  :        69,
-            "height" :        69, },           
+            "surface":        pygame.image.load(os.path.join("Game Images", "shield.png")),
+            "dimensions" :    (69,69)},           
         "play" :    {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "play-icon.png")),(100,100)),
-            "dimensions" :    (100,100),
-            "width"  :        100,
-            "height" :        100, },            
+            "surface":        pygame.image.load(os.path.join("Game Images", "play-icon.png")),
+            "dimensions" :    (100,100)},            
         "pause" :    {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "pause-icon.png")),(25,25)),
-            "dimensions" :    (25,25),
-            "width"  :        25,
-            "height" :        25, },            
+            "surface":        pygame.image.load(os.path.join("Game Images", "pause-icon.png")),
+            "dimensions" :    (25,25)},            
         "openmenu" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
-            "dimensions" :    (25,25),
-            "width"  :        25,
-            "height" :        25, },            
+            "surface":        pygame.image.load(os.path.join("Game Images", "menu-icon.png")),
+            "dimensions" :    (25,25)},            
         "menu" :     {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu.png")),(BGWIDTH,BGHEIGHT)),
-            "dimensions" :    (BGWIDTH,BGHEIGHT),
-            "width"  :        BGWIDTH,
-            "height" :        BGHEIGHT, },         
+            "surface":        pygame.image.load(os.path.join("Game Images", "menu.png")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},         
         "exitmenu" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "menu-icon.png")),(25,25)),
-            "dimensions" :    (25,25),
-            "width"  :        25,
-            "height" :        25, },               
+            "surface":        pygame.image.load(os.path.join("Game Images", "menu-icon.png")),
+            "dimensions" :    (25,25)},               
         "slime_name_text" :  {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),(100,40)),
-            "dimensions" :    (100,40),
-            "width"  :        100,
-            "height" :        40, },              
+            "surface":        pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),
+            "dimensions" :    (100,40)},              
         "health_text" :   {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "health_text.png")),(140,40)),
-            "dimensions" :    (140,40),
-            "width"  :        140,
-            "height" :        40, },       
+            "surface":        pygame.image.load(os.path.join("Game Images", "health_text.png")),
+            "dimensions" :    (140,40)},       
         "level_text" :    {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "level_text.png")),(80,40)),
-            "dimensions" :    (80,40),
-            "width"  :        80,
-            "height" :        40, },    
+            "surface":        pygame.image.load(os.path.join("Game Images", "level_text.png")),
+            "dimensions" :    (80,40)},    
         "killcount_text" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "killcounttitle_text.png")),(150,30)),
-            "dimensions" :    (150,30),
-            "width"  :        150,
-            "height" :        30, }, 
+            "surface":        pygame.image.load(os.path.join("Game Images", "killcounttitle_text.png")),
+            "dimensions" :    (150,30)}, 
         "snakekillcount_text" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "snakekillcount_text.png")),(140,40)),
-            "dimensions" :    (140,40),
-            "width"  :        140,
-            "height" :        40, }, 
+            "surface":        pygame.image.load(os.path.join("Game Images", "snakekillcount_text.png")),
+            "dimensions" :    (140,40)}, 
         "dragonkillcount_text" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "dragonkillcount_text.png")),(140,40)),
-            "dimensions" :    (140,40),
-            "width"  :        140,
-            "height" :        40, }, 
+            "surface":        pygame.image.load(os.path.join("Game Images", "dragonkillcount_text.png")),
+            "dimensions" :    (140,40)}, 
+        "ghostboss_text" : {
+            "surface":        pygame.image.load(os.path.join("Game Images", "shadowmonarchtext.png")),
+            "dimensions" :    (200,20)}, 
         "expbar" : {
-            "surface":        pygame.transform.scale(pygame.image.load(os.path.join("Game Images", "expbar_background.jpg")),(550,10)),
-            "dimensions" :    (550,10),
-            "width"  :        550,
-            "height" :        10,
-        }
+            "surface":        pygame.image.load(os.path.join("Game Images", "expbar_background.jpg")),
+            "dimensions" :    (550,10),}
     }
 
     for scorenumbers in range(10):
         pictures[str(scorenumbers)] = {
-            "surface" : pygame.transform.scale(pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),(60,60)),
-            "dimensions" : (60,60),
-            "width" :   60,
-            "height" :  60, }
+            "surface" : pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),
+            "dimensions" : (60,60)}
+        
+    for classtype in pictures:
+        pictures[classtype]["surface"] = pygame.transform.scale(pictures[classtype]["surface"],pictures[classtype]["dimensions"])
+
+
+
 
     pictures["menu"]["surface"].blit(pictures["slime_name_text"]["surface"],(10,10))
     pictures["menu"]["surface"].blit(pictures["health_text"]["surface"],(5,70))
@@ -263,12 +200,12 @@ if __name__=="__main__":
     loading = False
 
     #Loading Objects
-    maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["width"],pictures["slimepic"]["height"],"slime",4)
-    sword=weapon(0,0,pictures["swordpic"]["width"],pictures["swordpic"]["height"],"weapon")
-    playbutton = drawunit(250,121,pictures["play"]["width"],pictures["play"]["height"],"button")
-    pausebutton = drawunit(385,10,pictures["pause"]["width"],pictures["pause"]["height"],"button")
-    menubutton = drawunit(25,300,pictures["openmenu"]["width"],pictures["openmenu"]["height"],"button")
-    menuexitbutton = drawunit(550,300,pictures["exitmenu"]["width"],pictures["exitmenu"]["height"],"button")
+    maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["dimensions"][0],pictures["slimepic"]["dimensions"][1],"slime",4)
+    sword=weapon(0,0,pictures["swordpic"]["dimensions"][0],pictures["swordpic"]["dimensions"][1],"weapon")
+    playbutton = drawunit(250,121,pictures["play"]["dimensions"][0],pictures["play"]["dimensions"][1],"button")
+    pausebutton = drawunit(385,10,pictures["pause"]["dimensions"][0],pictures["pause"]["dimensions"][1],"button")
+    menubutton = drawunit(25,300,pictures["openmenu"]["dimensions"][0],pictures["openmenu"]["dimensions"][1],"button")
+    menuexitbutton = drawunit(550,300,pictures["exitmenu"]["dimensions"][0],pictures["exitmenu"]["dimensions"][1],"button")
     scoreboard = threedigittextbox(420,0,180,60,"textbox",0)
     dragonkc =  threedigittextbox(445,90,120,40,"textbox",0)
     snakekc = threedigittextbox(445,50,120,40,"textbox",0)
@@ -280,7 +217,7 @@ if __name__=="__main__":
     generateobject("enemyghost",objectrenderlist)
     ghostbosshpbar = displaybar(75,65,450,10,"bar",(150,0,0))
 
-    levelone = worldlevel(["enemysnake","critter","neutralmeteor","enemyghost"],[(120,360),(180,420),(180,300),(-1,-1)],pictures["bgcastle"]["surface"])
+    levelone = worldlevel(["enemysnake","critter","enemyghost"],[(120,360),(180,420),(-1,-1)],pictures["bgcastle"]["surface"])
     leveltwo = worldlevel(["enemydragon","enemysnake","neutralmeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
     levelthree = worldlevel(["enemysnake","neutralmeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
@@ -406,10 +343,10 @@ if __name__=="__main__":
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         maincharacter.losehealth(3,"neutralmeteor")
                     if objectrender.y >= GROUNDLEVEL - 40:
-                        explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion"]["width"]/2),
+                        explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion"]["dimensions"][0]/2),
                                                     objectrender.y,
-                                                    pictures["explosion"]["width"],
-                                                    pictures["explosion"]["height"],
+                                                    pictures["explosion"]["dimensions"][0],
+                                                    pictures["explosion"]["dimensions"][1],
                                                     "explosion", 
                                                     explosioncoordinateslist)
                         objectrenderlist.append(explosioneffect)
@@ -422,7 +359,7 @@ if __name__=="__main__":
                                     otherobject.losehealth(2,"bigarrow")
                                 else:
                                     otherobject.losehealth(1,"arrow")
-                                objectdeletelist.append(objectrender)
+                                    objectdeletelist.append(objectrender)
             
             if mouseclick:
                 sword.setswingstate()
@@ -438,22 +375,31 @@ if __name__=="__main__":
             for objectrender in objectdeletelist:
                 if (objectrender.classtype == "enemysnake" and 
                     not(objectrender.getx() < -150) and random.randint(1,100) >= 75):
-                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["healthpowerup"]["width"]/2),
-                                  objectrender.gety() + (objectrender.height - pictures["healthpowerup"]["height"]),
-                                  pictures["healthpowerup"]["width"],
-                                  pictures["healthpowerup"]["height"],
+                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["healthpowerup"]["dimensions"][0]/2),
+                                  objectrender.gety() + (objectrender.height - pictures["healthpowerup"]["dimensions"][1]),
+                                  pictures["healthpowerup"]["dimensions"][0],
+                                  pictures["healthpowerup"]["dimensions"][1],
                                   "healthpowerup",
                                   600)
                     objectrenderlist.append(power)
                 elif (objectrender.classtype == "enemydragon" and 
                     not(objectrender.getx() < -150) and random.randint(1,100) >= 80):
-                    heartpotion = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["heartpowerup"]["width"]/2),
-                                  objectrender.gety() + (objectrender.height - pictures["heartpowerup"]["height"]),
-                                  pictures["heartpowerup"]["width"],
-                                  pictures["heartpowerup"]["height"],
+                    heartpotion = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["heartpowerup"]["dimensions"][0]/2),
+                                  objectrender.gety() + (objectrender.height - pictures["heartpowerup"]["dimensions"][1]),
+                                  pictures["heartpowerup"]["dimensions"][0],
+                                  pictures["heartpowerup"]["dimensions"][1],
                                   "heartpowerup",
                                   300)
                     objectrenderlist.append(heartpotion)
+                elif (objectrender.classtype == "enemywisp"  and 
+                    not(objectrender.getx() < -150) and random.randint(1,100) >= 66):
+                    bigarrowpowerup = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["attackpowerup"]["dimensions"][0]/2),
+                                  objectrender.gety() + (objectrender.height - pictures["attackpowerup"]["dimensions"][1]),
+                                  pictures["attackpowerup"]["dimensions"][0],
+                                  pictures["attackpowerup"]["dimensions"][1],
+                                  "attackpowerup",
+                                  300)
+                    objectrenderlist.append(bigarrowpowerup)
                 try:
                     objectrenderlist.remove(objectrender)     
                 except ValueError:
@@ -495,8 +441,6 @@ if __name__=="__main__":
         else:
             loading = False
 
-        
-            
         #Rendering
 
         worldlist[stage].drawobject(screen)
@@ -530,6 +474,7 @@ if __name__=="__main__":
                         screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
             elif objectrender.classtype == "enemyghost":
                 ghostbosshpbar.drawobject(screen,pictures,objectrender.gethealthpercentage())
+                screen.blit(pictures["ghostboss_text"]["surface"],(190,40))
             screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
 
         if paused:
