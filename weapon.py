@@ -1,12 +1,13 @@
 from drawunit import drawunit
 from arrows import arrows
-import random
 
 class weapon(drawunit):
     def __init__(self,x,y,width,height,classtype):
         drawunit.__init__(self,x,y,width,height,classtype)
         self.swingstate = False
+        self.specialstate = False
         self.swingframe = 0
+        self.attackbarcount = 0
         self.weaponoffsetx = 60
         self.weaponoffsety = -30
         self.weapontype = "swordpic"
@@ -14,6 +15,11 @@ class weapon(drawunit):
         self.swingstate=True
     def getswingstate(self):
         return self.swingstate
+    def setspecialattackstate(self):
+        if self.attackbarcount > 0:
+            self.specialstate = True
+    def getspecialattackstate(self):
+        return self.specialstate
     def getweapontype(self):
         return self.weapontype
     def toggleweapon(self):
@@ -40,9 +46,14 @@ class weapon(drawunit):
             if self.weaponoffsetx <= 50:
                 self.weaponoffsetx = 60
                 self.swingstate = False
-                if random.randint(1,100) > 50:
-                    arrow=arrows(self.x,self.getmiddley()-15,50,30,"bigarrow")
-                else:
-                    arrow=arrows(self.x,self.getmiddley()-5,30,10,"arrow")
+                arrow=arrows(self.x,self.getmiddley()-5,30,10,"arrow")
+                arrowslist.append(arrow)
+        elif self.weapontype == "bowpic" and self.specialstate:
+            self.weaponoffsetx -= 0.33
+            if self.weaponoffsetx <= 50:
+                self.weaponoffsetx = 60
+                self.attackbarcount -= 1
+                self.specialstate = False
+                arrow=arrows(self.x,self.getmiddley()-15,50,30,"bigarrow")
                 arrowslist.append(arrow)
             

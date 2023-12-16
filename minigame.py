@@ -51,6 +51,7 @@ if __name__=="__main__":
 
     clock = pygame.time.Clock()
 
+    #Avoid keywords: enemy, arrow
     pictures={
         "slimepic" : {
             "surface":        pygame.image.load(os.path.join("Game Images","slime(hitbox).png")),
@@ -116,8 +117,8 @@ if __name__=="__main__":
             "surface":        pygame.image.load(os.path.join("Game Images", "heartpotion.png")),
             "dimensions" :    (20,30)},
         "attackpowerup" :     {
-            "surface":        pygame.image.load(os.path.join("Game Images", "coin.png")),
-            "dimensions" :    (25,50)},             
+            "surface":        pygame.image.load(os.path.join("Game Images", "atkpowerup.png")),
+            "dimensions" :    (15,25)},             
         "coin" :     {
             "surface":        pygame.image.load(os.path.join("Game Images", "coin.png")),
             "dimensions" :    (25,50)},           
@@ -132,7 +133,10 @@ if __name__=="__main__":
             "dimensions" :    (100,100)},            
         "pause" :    {
             "surface":        pygame.image.load(os.path.join("Game Images", "pause-icon.png")),
-            "dimensions" :    (25,25)},            
+            "dimensions" :    (25,25)},     
+        "attackbar" : {
+            "surface":        pygame.image.load(os.path.join("Game Images", "pause-icon.png")),
+            "dimensions" :    (30,10)},       
         "openmenu" : {
             "surface":        pygame.image.load(os.path.join("Game Images", "menu-icon.png")),
             "dimensions" :    (25,25)},            
@@ -192,6 +196,7 @@ if __name__=="__main__":
     uArrow_keypress = False
     escape_keypress = False
     ikey_keypress = False
+    ekey_keypress = False
     mouseclick = False
     spacepress = False
     weaponswap = False
@@ -224,6 +229,7 @@ if __name__=="__main__":
     stage = 0
     cstage = 0
     loadingtimer = 0
+    bossalive = True
 
     explosioncoordinateslist = []
     for rows in range(2):
@@ -253,6 +259,8 @@ if __name__=="__main__":
                     escape_keypress = True
                 if event.key == pygame.K_q:
                     weaponswap = True
+                if event.key == pygame.K_e:
+                    ekey_keypress = True
                 if event.key == pygame.K_i:
                     ikey_keypress = True
                                
@@ -335,6 +343,10 @@ if __name__=="__main__":
                     if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.healthcap < 7:
                         objectdeletelist.append(objectrender)
                         maincharacter.healthcap += 1
+                if objectrender.classtype =="attackpowerup":
+                    if objectrender.checkcollision(maincharacter.getobjectbody()) and sword.attackbarcount < 3:
+                        objectdeletelist.append(objectrender)
+                        sword.attackbarcount +=1
                 if objectrender.classtype == "neutralmeteor":
                     for otherobject in objectrenderlist:
                         if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon") 
@@ -363,8 +375,12 @@ if __name__=="__main__":
             
             if mouseclick:
                 sword.setswingstate()
-                mouseclick=False
-                
+                mouseclick = False
+            
+            if ekey_keypress:
+                sword.setspecialattackstate()
+                ekey_keypress = False
+
             if spacepress and not(maincharacter.getjumpstate()):
                 maincharacter.startjump()
 
@@ -400,6 +416,9 @@ if __name__=="__main__":
                                   "attackpowerup",
                                   300)
                     objectrenderlist.append(bigarrowpowerup)
+                elif (objectrender.classtype == "enemyghost"  and 
+                    not(objectrender.getx() < -150)):
+                        bossalive = False
                 try:
                     objectrenderlist.remove(objectrender)     
                 except ValueError:
@@ -416,7 +435,7 @@ if __name__=="__main__":
             for classtype in spawnlist:
                 generateobject(classtype,objectrenderlist)
         
-        if scoreboard.value >= 10 and scoreboard.value < 20:
+        if scoreboard.value >= 10 and scoreboard.value < 20 and not (bossalive):
             stage = 1
             if stage != cstage:
                 cstage = stage
@@ -426,7 +445,7 @@ if __name__=="__main__":
                 maincharacter.x = 0
                 maincharacter.y = GROUNDLEVEL - 60
 
-        elif scoreboard.value >= 20:
+        elif scoreboard.value >= 20 and not (bossalive):
             stage = 2
             if stage != cstage:
                 cstage = stage
@@ -457,6 +476,8 @@ if __name__=="__main__":
             screen.blit(pictures["pause"]["surface"],(pausebutton.x,pausebutton.y))
         for x in range(maincharacter.gethealth()):
             screen.blit(pictures["heart"]["surface"],(10+30*x,10))
+        for x in range(sword.attackbarcount):
+            screen.blit(pictures["attackbar"]["surface"],(10+30*x,40))
         for x in range(maincharacter.getiframe()):
             screen.blit(pictures["shield"]["surface"],maincharacter.getposition())
         for objectrender in objectrenderlist:
