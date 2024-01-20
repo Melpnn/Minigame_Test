@@ -39,8 +39,8 @@ def generateobject(classtype,objectrenderlist):
     elif classtype == "enemyghost":
         ghost = ghostenemy(500,193,pictures["enemyghost"]["dimensions"][0],pictures["enemyghost"]["dimensions"][1],"enemyghost",50,20,1,1)
         objectrenderlist.append(ghost)
-    elif classtype == "critter":
-        bunny=critters(0,GROUNDLEVEL-31,31,31,"critter",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
+    elif classtype == "critter_spritesheet":
+        bunny=critters(0,GROUNDLEVEL-31,31,31,"critter_spritesheet",[(449,166,31,31),(502,166,31,31),(554,166,31,31),(605,166,31,31)])
         objectrenderlist.append(bunny)
     else:
         print("Unkown Classtype " + classtype)
@@ -83,12 +83,14 @@ if __name__=="__main__":
         "gameoverpic" : {
             "surface":        pygame.image.load(os.path.join("Game Images","gameover.png")),
             "dimensions" :    (BGWIDTH,BGHEIGHT)},         
-        "critter" :    {
+        "critter_spritesheet" :    {
             "surface":        pygame.image.load(os.path.join("Game Images", "animalspritesheet.png")),
-            "dimensions" :    (31,31)},        
-        "explosion" :   {
+            "dimensions" :    (31,31),
+            "sheetdimensions": (653,422)},        
+        "explosion_spritesheet" :   {
             "surface":        pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),
-            "dimensions" :    (59,59)},            
+            "dimensions" :    (59,59),
+            "sheetdimensions":(300,120)},            
         "bgforest" :  {
             "surface":        pygame.image.load(os.path.join("Game Images","night_background.jpg")),
             "dimensions" :    (BGWIDTH,BGHEIGHT)},            
@@ -127,7 +129,7 @@ if __name__=="__main__":
             "dimensions" :    (20,20)},  
         "shield" :      {
             "surface":        pygame.image.load(os.path.join("Game Images", "shield.png")),
-            "dimensions" :    (69,69)},           
+            "dimensions" :    (69,69)},    
         "play" :    {
             "surface":        pygame.image.load(os.path.join("Game Images", "play-icon.png")),
             "dimensions" :    (100,100)},            
@@ -135,8 +137,8 @@ if __name__=="__main__":
             "surface":        pygame.image.load(os.path.join("Game Images", "pause-icon.png")),
             "dimensions" :    (25,25)},     
         "attackbar" : {
-            "surface":        pygame.image.load(os.path.join("Game Images", "pause-icon.png")),
-            "dimensions" :    (30,10)},       
+            "surface":        pygame.image.load(os.path.join("Game Images", "attack-icon.png")),
+            "dimensions" :    (20,20)},       
         "openmenu" : {
             "surface":        pygame.image.load(os.path.join("Game Images", "menu-icon.png")),
             "dimensions" :    (25,25)},            
@@ -176,11 +178,12 @@ if __name__=="__main__":
         pictures[str(scorenumbers)] = {
             "surface" : pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),
             "dimensions" : (60,60)}
-        
+    
     for classtype in pictures:
-        pictures[classtype]["surface"] = pygame.transform.scale(pictures[classtype]["surface"],pictures[classtype]["dimensions"])
-
-
+        if "spritesheet" in classtype:
+            pictures[classtype]["surface"] = pygame.transform.scale(pictures[classtype]["surface"],pictures[classtype]["sheetdimensions"])
+        else:
+            pictures[classtype]["surface"] = pygame.transform.scale(pictures[classtype]["surface"],pictures[classtype]["dimensions"])
 
 
     pictures["menu"]["surface"].blit(pictures["slime_name_text"]["surface"],(10,10))
@@ -219,16 +222,15 @@ if __name__=="__main__":
     expbar = displaybar(25,330,550,10,"bar",(0,255,0))
 
     objectrenderlist = []
-    generateobject("enemyghost",objectrenderlist)
-    ghostbosshpbar = displaybar(75,65,450,10,"bar",(150,0,0))
 
-    levelone = worldlevel(["enemysnake","critter","enemyghost"],[(120,360),(180,420),(-1,-1)],pictures["bgcastle"]["surface"])
+    levelone = worldlevel(["enemysnake","critter_spritesheet","enemyghost"],[(120,360),(180,420),(-1,-1)],pictures["bgcastle"]["surface"])
     leveltwo = worldlevel(["enemydragon","enemysnake","neutralmeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
     levelthree = worldlevel(["enemysnake","neutralmeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
     stage = 0
     cstage = 0
     loadingtimer = 0
+    spawnboss = True
     bossalive = True
 
     explosioncoordinateslist = []
@@ -355,11 +357,11 @@ if __name__=="__main__":
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
                         maincharacter.losehealth(3,"neutralmeteor")
                     if objectrender.y >= GROUNDLEVEL - 40:
-                        explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion"]["dimensions"][0]/2),
+                        explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion_spritesheet"]["dimensions"][0]/2),
                                                     objectrender.y,
-                                                    pictures["explosion"]["dimensions"][0],
-                                                    pictures["explosion"]["dimensions"][1],
-                                                    "explosion", 
+                                                    pictures["explosion_spritesheet"]["dimensions"][0],
+                                                    pictures["explosion_spritesheet"]["dimensions"][1],
+                                                    "explosion_spritesheet", 
                                                     explosioncoordinateslist)
                         objectrenderlist.append(explosioneffect)
                         objectdeletelist.append(objectrender)
@@ -435,6 +437,12 @@ if __name__=="__main__":
             for classtype in spawnlist:
                 generateobject(classtype,objectrenderlist)
         
+        if snakekc.value > 2 and stage == 0 :
+            if spawnboss:
+                generateobject("enemyghost",objectrenderlist)
+                ghostbosshpbar = displaybar(75,65,450,10,"bar",(150,0,0))
+                spawnboss = False
+        
         if scoreboard.value >= 10 and scoreboard.value < 20 and not (bossalive):
             stage = 1
             if stage != cstage:
@@ -465,7 +473,6 @@ if __name__=="__main__":
         worldlist[stage].drawobject(screen)
 
         expbar.drawobject(screen,pictures,maincharacter.getexppercent())
-        
         screen.blit(pictures["openmenu"]["surface"],(25,300))
         screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
         screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
@@ -497,7 +504,6 @@ if __name__=="__main__":
                 ghostbosshpbar.drawobject(screen,pictures,objectrender.gethealthpercentage())
                 screen.blit(pictures["ghostboss_text"]["surface"],(190,40))
             screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
-
         if paused:
             screen.blit(pictures["grayfilter"]["surface"],(0,0))
             screen.blit(pictures["play"]["surface"],(playbutton.x,playbutton.y))
