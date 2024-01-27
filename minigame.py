@@ -5,6 +5,7 @@ import random
 from drawunit import drawunit
 from worldlevel import worldlevel
 from snake import snakeenemy
+from spider import spiderenemy
 from meteor import meteors
 from dragon import dragonenemy
 from ghost import ghostenemy
@@ -28,8 +29,11 @@ def generateobject(classtype,objectrenderlist):
         if random.randint(0,100) <= 30:
             snakehitpoint = 5
             snaketype = "Big"
-        snake=snakeenemy(600,193,pictures["enemysnake"]["dimensions"][0],pictures["enemysnake"]["dimensions"][1],"enemysnake",snakehitpoint,snaketype,5)
+        snake = snakeenemy(600,193,pictures["enemysnake"]["dimensions"][0],pictures["enemysnake"]["dimensions"][1],"enemysnake",snakehitpoint,snaketype,5)
         objectrenderlist.append(snake)
+    elif classtype == "enemyspider":
+        spider = spiderenemy(BGWIDTH-60,GROUNDLEVEL-26,pictures["enemyspider"]["dimensions"][0],pictures["enemyspider"]["dimensions"][1],"enemyspider",3)
+        objectrenderlist.append(spider)
     elif classtype == "neutralmeteor":       
         meteor = meteors(random.randint(50,550),-100,pictures["neutralmeteor"]["dimensions"][0],pictures["neutralmeteor"]["dimensions"][1],"neutralmeteor")
         objectrenderlist.append(meteor)
@@ -71,6 +75,9 @@ if __name__=="__main__":
         "enemysnake" : {
             "surface":        pygame.image.load(os.path.join("Game Images","snake(hitbox).png")),
             "dimensions" :    (70,70)}, 
+        "enemyspider" : {
+            "surface":        pygame.image.load(os.path.join("Game Images","spider.png")),
+            "dimensions":     (38,26)},
         "neutralmeteor": {
             "surface":        pygame.image.load(os.path.join("Game Images","meteor(hitbox).png")),
             "dimensions" :    (30,80)},             
@@ -90,7 +97,11 @@ if __name__=="__main__":
         "explosion_spritesheet" :   {
             "surface":        pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),
             "dimensions" :    (59,59),
-            "sheetdimensions":(300,120)},            
+            "sheetdimensions":(300,120)},    
+        "laserbeam_spritesheet" : {
+            "surface":        pygame.image.load(os.path.join("Game Images", "laserbeamspritesheet.png")),
+            "dimensions" :    (318,145),
+            "sheetdimensions":(3816,145)},           
         "bgforest" :  {
             "surface":        pygame.image.load(os.path.join("Game Images","night_background.jpg")),
             "dimensions" :    (BGWIDTH,BGHEIGHT)},            
@@ -223,7 +234,7 @@ if __name__=="__main__":
 
     objectrenderlist = []
 
-    levelone = worldlevel(["enemysnake","critter_spritesheet","enemyghost"],[(120,360),(180,420),(-1,-1)],pictures["bgcastle"]["surface"])
+    levelone = worldlevel(["enemysnake","critter_spritesheet","enemyghost","enemyspider"],[(120,360),(180,420),(-1,-1),(60,180)],pictures["bgcastle"]["surface"])
     leveltwo = worldlevel(["enemydragon","enemysnake","neutralmeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
     levelthree = worldlevel(["enemysnake","neutralmeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
@@ -294,7 +305,7 @@ if __name__=="__main__":
         if ikey_keypress:
             openmenu = not openmenu
             ikey_keypress = False
-        if maincharacter.gethealth() > 0 and not(maincharacter.offscreen()) and not (paused or openmenu) and not (loading):
+        if maincharacter.gethealth() > 0 and not (paused or openmenu) and not (loading):
             objectdeletelist=[]
             if rArrow_keypress:
                 maincharacter.changex(maincharacter.speed)
@@ -315,7 +326,7 @@ if __name__=="__main__":
                         snakekc.value += 1
                         snakekc.dictionaryupdate()
                         maincharacter.updateexperience(objectrender.experience)
-                    elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon") and objectrender.attacker != "neutralmeteor":
+                    elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon"  or objectrender.classtype == "enemyspider") and objectrender.attacker != "neutralmeteor":
                         scoreboard.value += 1
                         scoreboard.dictionaryupdate()
                         if objectrender.classtype =="enemydragon":
@@ -351,7 +362,7 @@ if __name__=="__main__":
                         sword.attackbarcount +=1
                 if objectrender.classtype == "neutralmeteor":
                     for otherobject in objectrenderlist:
-                        if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon") 
+                        if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon" or otherobject.classtype == "enemyspider") 
                             and objectrender.checkcollision(otherobject.getobjectbody())):
                             otherobject.losehealth(otherobject.gethealth(),objectrender.classtype)  
                     if objectrender.checkcollision(maincharacter.getobjectbody()):
