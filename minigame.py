@@ -98,7 +98,7 @@ if __name__=="__main__":
             "surface":        pygame.image.load(os.path.join("Game Images", "explosionspritesheet.png")),
             "dimensions" :    (59,59),
             "sheetdimensions":(300,120)},    
-        "laserbeam_spritesheet" : {
+        "enemylaserbeam_spritesheet" : {
             "surface":        pygame.image.load(os.path.join("Game Images", "laserbeamspritesheet.png")),
             "dimensions" :    (318,145),
             "sheetdimensions":(3816,145)},           
@@ -310,11 +310,11 @@ if __name__=="__main__":
             if rArrow_keypress:
                 maincharacter.changex(maincharacter.speed)
                 if maincharacter.offscreen():
-                    maincharacter.changex(-1)
+                    maincharacter.changex(maincharacter.speed * -1)
             if lArrow_keypress:
                 maincharacter.changex(-maincharacter.speed)
                 if maincharacter.offscreen():
-                    maincharacter.changex(1)
+                    maincharacter.changex(maincharacter.speed)
 
             for objectrender in objectrenderlist:
                 if objectrender.offscreen():
@@ -531,7 +531,7 @@ if __name__=="__main__":
         if loading:
             screen.blit(pictures["loadingscreen"]["surface"],(0,0))
 
-        if maincharacter.gethealth() <= 0 or maincharacter.offscreen():
+        if maincharacter.gethealth() <= 0:
             screen.blit(pictures["grayfilter"]["surface"],(0,0))
 
         #Timer
