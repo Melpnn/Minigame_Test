@@ -100,8 +100,8 @@ if __name__=="__main__":
             "sheetdimensions":(300,120)},    
         "enemylaserbeam_spritesheet" : {
             "surface":        pygame.image.load(os.path.join("Game Images", "laserbeamspritesheet.png")),
-            "dimensions" :    (318,145),
-            "sheetdimensions":(3816,145)},           
+            "dimensions" :    (636,145),
+            "sheetdimensions":(7642,145)},           
         "bgforest" :  {
             "surface":        pygame.image.load(os.path.join("Game Images","night_background.jpg")),
             "dimensions" :    (BGWIDTH,BGHEIGHT)},            
@@ -234,8 +234,8 @@ if __name__=="__main__":
 
     objectrenderlist = []
 
-    levelone = worldlevel(["enemysnake","critter_spritesheet","enemyghost","enemyspider"],[(120,360),(180,420),(-1,-1),(60,180)],pictures["bgcastle"]["surface"])
-    leveltwo = worldlevel(["enemydragon","enemysnake","neutralmeteor"],[(180,420),(120,360),(180,300)],pictures["bgdesert"]["surface"]) 
+    levelone = worldlevel(["enemysnake","critter_spritesheet","enemyghost"],[(120,360),(180,420),(-1,-1)],pictures["bgcastle"]["surface"])
+    leveltwo = worldlevel(["enemydragon","enemysnake","neutralmeteor","enemyspider"],[(180,420),(120,360),(180,300),(60,180)],pictures["bgdesert"]["surface"]) 
     levelthree = worldlevel(["enemysnake","neutralmeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
     stage = 0
