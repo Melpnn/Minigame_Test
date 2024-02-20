@@ -55,6 +55,11 @@ if __name__=="__main__":
 
     clock = pygame.time.Clock()
 
+    music={
+        "castle_bgmusic" :   pygame.mixer.music.load(os.path.join("Game Music","castle_bgmusic.mp3")),
+        "sword_swing" :      pygame.mixer.Sound(os.path.join("Game Music","sword_swing.mp3"))        
+    }
+
     #Avoid keywords: enemy, arrow
     pictures={
         "slimepic" : {
@@ -185,6 +190,8 @@ if __name__=="__main__":
             "dimensions" :    (550,10),}
     }
 
+    pygame.mixer.music.play(-1)
+    
     for scorenumbers in range(10):
         pictures[str(scorenumbers)] = {
             "surface" : pygame.image.load(os.path.join("Game Images", f"{str(scorenumbers)}.png")),
@@ -290,6 +297,7 @@ if __name__=="__main__":
                     spacepress = False
 
         #LOGIC:
+    
         if mouseclick:
             if playbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
                 paused = False 
@@ -389,6 +397,8 @@ if __name__=="__main__":
             if mouseclick:
                 sword.setswingstate()
                 mouseclick = False
+                if sword.getweapontype() == "swordpic":
+                    music["sword_swing"].play()
             
             if ekey_keypress:
                 sword.setspecialattackstate()
@@ -537,3 +547,5 @@ if __name__=="__main__":
         #Timer
         pygame.display.flip()
         clock.tick(60)
+
+    
