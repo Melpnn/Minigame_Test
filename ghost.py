@@ -7,7 +7,7 @@ class ghostenemy(combatant):
     def __init__(self,x,y,width,height,classtype,experience,health,speed,atkpower):
         combatant.__init__(self,x,y,width,height,classtype,experience,health,speed,atkpower)     
         self.steps = -1
-        self.maxhealth = 20
+        self.maxhealth = 10
         self.lasercoordinateslist = []
         self.lockedstate = False 
         self.lockframe = 0

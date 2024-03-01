@@ -46,7 +46,7 @@ class weapon(drawunit):
             if self.weaponoffsetx <= 50:
                 self.weaponoffsetx = 60
                 self.swingstate = False
-                arrow=arrows(self.x,self.getmiddley()-5,30,10,"arrow")
+                arrow = arrows(self.x,self.getmiddley()-5,30,10,"arrow")
                 arrowslist.append(arrow)
         elif self.weapontype == "bowpic" and self.specialstate:
             self.weaponoffsetx -= 0.33
@@ -54,6 +54,6 @@ class weapon(drawunit):
                 self.weaponoffsetx = 60
                 self.attackbarcount -= 1
                 self.specialstate = False
-                arrow=arrows(self.x,self.getmiddley()-15,50,30,"bigarrow")
+                arrow = arrows(self.x,self.getmiddley()-15,50,30,"bigarrow")
                 arrowslist.append(arrow)
             

@@ -57,7 +57,11 @@ if __name__=="__main__":
 
     music={
         "castle_bgmusic" :   pygame.mixer.music.load(os.path.join("Game Music","castle_bgmusic.mp3")),
-        "sword_swing" :      pygame.mixer.Sound(os.path.join("Game Music","sword_swing.mp3"))        
+        "swordswing_sfx" :   pygame.mixer.Sound(os.path.join("Game Music","swordswing_sfx.mp3")),
+        "laserbeam_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","laserbeam_sfx.mp3")),     
+        "arrow_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","arrow_sfx.mp3")),    
+        "slimejump_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","slimejump_sfx.mp3")),    
+        "kill_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","kill_sfx.mp3")),       
     }
 
     #Avoid keywords: enemy, arrow
@@ -189,8 +193,6 @@ if __name__=="__main__":
             "surface":        pygame.image.load(os.path.join("Game Images", "expbar_background.jpg")),
             "dimensions" :    (550,10),}
     }
-
-    pygame.mixer.music.play(-1)
     
     for scorenumbers in range(10):
         pictures[str(scorenumbers)] = {
@@ -218,12 +220,14 @@ if __name__=="__main__":
     escape_keypress = False
     ikey_keypress = False
     ekey_keypress = False
+    mkey_keypress = False
     mouseclick = False
     spacepress = False
     weaponswap = False
     paused = False
     openmenu = False 
     loading = False
+    muted = False
 
     #Loading Objects
     maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["dimensions"][0],pictures["slimepic"]["dimensions"][1],"slime",4)
@@ -283,6 +287,8 @@ if __name__=="__main__":
                     ekey_keypress = True
                 if event.key == pygame.K_i:
                     ikey_keypress = True
+                if event.key == pygame.K_m:
+                    mkey_keypress = True
                                
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_s:
@@ -295,6 +301,9 @@ if __name__=="__main__":
                     uArrow_keypress = False
                 if event.key == pygame.K_SPACE:
                     spacepress = False
+
+        if not(muted):
+            pygame.mixer.music.play(-1)
 
         #LOGIC:
     
@@ -313,6 +322,9 @@ if __name__=="__main__":
         if ikey_keypress:
             openmenu = not openmenu
             ikey_keypress = False
+        if mkey_keypress:
+            muted = not muted
+            mkey_keypress = False
         if maincharacter.gethealth() > 0 and not (paused or openmenu) and not (loading):
             objectdeletelist=[]
             if rArrow_keypress:
@@ -345,6 +357,8 @@ if __name__=="__main__":
                             snakekc.value +=1
                             snakekc.dictionaryupdate()
                             maincharacter.updateexperience(objectrender.experience)
+                    if objectrender.classtype != "enemywisp":
+                        music["kill_sfx"].play()
                     objectdeletelist.append(objectrender)
                 if objectrender.classtype == "enemyghost":
                     objectrender.frameupdate(objectrenderlist)
@@ -398,7 +412,7 @@ if __name__=="__main__":
                 sword.setswingstate()
                 mouseclick = False
                 if sword.getweapontype() == "swordpic":
-                    music["sword_swing"].play()
+                    music["swordswing_sfx"].play()
             
             if ekey_keypress:
                 sword.setspecialattackstate()
@@ -406,6 +420,7 @@ if __name__=="__main__":
 
             if spacepress and not(maincharacter.getjumpstate()):
                 maincharacter.startjump()
+                music["slimejump_sfx"].play()
 
             if weaponswap:
                 sword.toggleweapon()
