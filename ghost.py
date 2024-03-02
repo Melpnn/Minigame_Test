@@ -7,29 +7,38 @@ class ghostenemy(combatant):
     def __init__(self,x,y,width,height,classtype,experience,health,speed,atkpower):
         combatant.__init__(self,x,y,width,height,classtype,experience,health,speed,atkpower)     
         self.steps = -1
-        self.maxhealth = 10
+        self.maxhealth = 20
         self.lasercoordinateslist = []
         self.lockedstate = False 
         self.lockframe = 0
+        self.blinking = False
+        self.blinkframe = 0
         for columns in range(12):
             self.lasercoordinateslist.append((636*columns,0,636,145))
     def gethealthpercentage(self):
         return self.health / self.maxhealth
     def attackposition(self):
         if self.y == 200 and random.randint(1,1) == 1 and not(self.lockedstate) and self.gethealthpercentage() < 0.9:
+            self.blinking = True
             self.lockedstate = True
             self.lockframe = 0
+            self.blinkframe = 0
             return True
         else:
             return False
     def frameupdate(self,objectrenderlist):
         combatant.frameupdate(self)
-        if self.attackposition():
-            laserbeam = laserbeamenemy(self.x - 600,self.y - 30,636,145,"enemylaserbeam_spritesheet",0,9999,self.lasercoordinateslist)
-            objectrenderlist.append(laserbeam)    
+        self.attackposition()
+        if self.blinking:
+            self.blinkframe += 1
+            if self.blinkframe >= 60:
+                self.blinking = False
+                self.blinkframe = 0
+                laserbeam = laserbeamenemy(self.x - 600,self.y - 30,636,145,"enemylaserbeam_spritesheet",0,9999,self.lasercoordinateslist)
+                objectrenderlist.append(laserbeam)                   
         if self.lockedstate:
             self.lockframe += 1
-            if self.lockframe >= 60:
+            if self.lockframe >= 120:
                 self.lockedstate = False
                 self.lockframe = 0    
                 self.y += self.steps

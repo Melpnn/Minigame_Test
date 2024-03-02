@@ -59,9 +59,10 @@ if __name__=="__main__":
         "castle_bgmusic" :   pygame.mixer.music.load(os.path.join("Game Music","castle_bgmusic.mp3")),
         "swordswing_sfx" :   pygame.mixer.Sound(os.path.join("Game Music","swordswing_sfx.mp3")),
         "laserbeam_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","laserbeam_sfx.mp3")),     
-        "arrow_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","arrow_sfx.mp3")),    
+        "arrow_sfx"  :       pygame.mixer.Sound(os.path.join("Game Music","arrow_sfx.mp3")),    
         "slimejump_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","slimejump_sfx.mp3")),    
-        "kill_sfx"  :   pygame.mixer.Sound(os.path.join("Game Music","kill_sfx.mp3")),       
+        "kill_sfx"  :        pygame.mixer.Sound(os.path.join("Game Music","kill_sfx.mp3")),       
+        "explosion_sfx" :    pygame.mixer.Sound(os.path.join("Game Music","explosion_sfx.mp3")),
     }
 
     #Avoid keywords: enemy, arrow
@@ -539,6 +540,12 @@ if __name__=="__main__":
             elif objectrender.classtype == "enemyghost":
                 ghostbosshpbar.drawobject(screen,pictures,objectrender.gethealthpercentage())
                 screen.blit(pictures["ghostboss_text"]["surface"],(190,40))
+                if (objectrender.blinking and 
+                   objectrender.blinkframe % 15 in range(1,6)):
+                    pictures["enemyghost"]["surface"].set_alpha(10)
+                else:
+                    pictures["enemyghost"]["surface"].set_alpha(255)
+             
             screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
         if paused:
             screen.blit(pictures["grayfilter"]["surface"],(0,0))
