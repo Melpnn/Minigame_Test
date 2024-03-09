@@ -111,7 +111,10 @@ if __name__=="__main__":
         "enemylaserbeam_spritesheet" : {
             "surface":        pygame.image.load(os.path.join("Game Images", "laserbeamspritesheet.png")),
             "dimensions" :    (636,145),
-            "sheetdimensions":(7642,145)},           
+            "sheetdimensions":(7642,145)},     
+        "bgmenu" :  { 
+            "surface":        pygame.image.load(os.path.join("Game Images", "menu_background.jpg")),
+            "dimensions" :    (BGWIDTH,BGHEIGHT)},    
         "bgforest" :  {
             "surface":        pygame.image.load(os.path.join("Game Images","night_background.jpg")),
             "dimensions" :    (BGWIDTH,BGHEIGHT)},            
@@ -160,14 +163,14 @@ if __name__=="__main__":
         "attackbar" : {
             "surface":        pygame.image.load(os.path.join("Game Images", "attack-icon.png")),
             "dimensions" :    (20,20)},       
-        "openmenu" : {
-            "surface":        pygame.image.load(os.path.join("Game Images", "menu-icon.png")),
+        "openstats" : {
+            "surface":        pygame.image.load(os.path.join("Game Images", "stats-icon.png")),
             "dimensions" :    (25,25)},            
-        "menu" :     {
-            "surface":        pygame.image.load(os.path.join("Game Images", "menu.png")),
+        "stats" :     {
+            "surface":        pygame.image.load(os.path.join("Game Images", "stats.png")),
             "dimensions" :    (BGWIDTH,BGHEIGHT)},         
-        "exitmenu" : {
-            "surface":        pygame.image.load(os.path.join("Game Images", "menu-icon.png")),
+        "exitstats" : {
+            "surface":        pygame.image.load(os.path.join("Game Images", "stats-icon.png")),
             "dimensions" :    (25,25)},               
         "slime_name_text" :  {
             "surface":        pygame.image.load(os.path.join("Game Images", "slime_name_text.png")),
@@ -206,13 +209,18 @@ if __name__=="__main__":
         else:
             pictures[classtype]["surface"] = pygame.transform.scale(pictures[classtype]["surface"],pictures[classtype]["dimensions"])
 
+    for sound in music:
+        if "sfx" in sound:
+            music[sound].set_volume(0.4)
 
-    pictures["menu"]["surface"].blit(pictures["slime_name_text"]["surface"],(10,10))
-    pictures["menu"]["surface"].blit(pictures["health_text"]["surface"],(5,70))
-    pictures["menu"]["surface"].blit(pictures["level_text"]["surface"],(110,10))
-    pictures["menu"]["surface"].blit(pictures["killcount_text"]["surface"],(330,15))
-    pictures["menu"]["surface"].blit(pictures["snakekillcount_text"]["surface"],(305,50))
-    pictures["menu"]["surface"].blit(pictures["dragonkillcount_text"]["surface"],(305,90))
+    laserbeamchannel = pygame.mixer.Channel(0)
+
+    pictures["stats"]["surface"].blit(pictures["slime_name_text"]["surface"],(10,10))
+    pictures["stats"]["surface"].blit(pictures["health_text"]["surface"],(5,70))
+    pictures["stats"]["surface"].blit(pictures["level_text"]["surface"],(110,10))
+    pictures["stats"]["surface"].blit(pictures["killcount_text"]["surface"],(330,15))
+    pictures["stats"]["surface"].blit(pictures["snakekillcount_text"]["surface"],(305,50))
+    pictures["stats"]["surface"].blit(pictures["dragonkillcount_text"]["surface"],(305,90))
 
     dArrow_keypress = False
     rArrow_keypress = False
@@ -226,22 +234,23 @@ if __name__=="__main__":
     spacepress = False
     weaponswap = False
     paused = False
-    openmenu = False 
+    openstats = False 
     loading = False
     muted = False
+    menu = True
 
     #Loading Objects
     maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["dimensions"][0],pictures["slimepic"]["dimensions"][1],"slime",4)
     sword=weapon(0,0,pictures["swordpic"]["dimensions"][0],pictures["swordpic"]["dimensions"][1],"weapon")
     playbutton = drawunit(250,121,pictures["play"]["dimensions"][0],pictures["play"]["dimensions"][1],"button")
     pausebutton = drawunit(385,10,pictures["pause"]["dimensions"][0],pictures["pause"]["dimensions"][1],"button")
-    menubutton = drawunit(25,300,pictures["openmenu"]["dimensions"][0],pictures["openmenu"]["dimensions"][1],"button")
-    menuexitbutton = drawunit(550,300,pictures["exitmenu"]["dimensions"][0],pictures["exitmenu"]["dimensions"][1],"button")
+    statsbutton = drawunit(25,300,pictures["openstats"]["dimensions"][0],pictures["openstats"]["dimensions"][1],"button")
+    statsexitbutton = drawunit(550,300,pictures["exitstats"]["dimensions"][0],pictures["exitstats"]["dimensions"][1],"button")
     scoreboard = threedigittextbox(420,0,180,60,"textbox",0)
     dragonkc =  threedigittextbox(445,90,120,40,"textbox",0)
     snakekc = threedigittextbox(445,50,120,40,"textbox",0)
     playerlevel = threedigittextbox(500,305,75,25,"textbox",0)
-    menulevel = threedigittextbox(175,10,120,40,"textbox",0)
+    statslevel = threedigittextbox(175,10,120,40,"textbox",0)
     expbar = displaybar(25,330,550,10,"bar",(0,255,0))
 
     objectrenderlist = []
@@ -303,268 +312,278 @@ if __name__=="__main__":
                 if event.key == pygame.K_SPACE:
                     spacepress = False
 
-        if not(muted):
-            pygame.mixer.music.play(-1)
-
         #LOGIC:
-    
-        if mouseclick:
-            if playbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
-                paused = False 
-            if pausebutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
-                paused = True
-            if menubutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
-                openmenu = True
-            if menuexitbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
-                openmenu = False
-        if escape_keypress:
-            paused = not paused
-            escape_keypress = False
-        if ikey_keypress:
-            openmenu = not openmenu
-            ikey_keypress = False
-        if mkey_keypress:
-            muted = not muted
-            mkey_keypress = False
-        if maincharacter.gethealth() > 0 and not (paused or openmenu) and not (loading):
-            objectdeletelist=[]
-            if rArrow_keypress:
-                maincharacter.changex(maincharacter.speed)
-                if maincharacter.offscreen():
-                    maincharacter.changex(maincharacter.speed * -1)
-            if lArrow_keypress:
-                maincharacter.changex(-maincharacter.speed)
-                if maincharacter.offscreen():
-                    maincharacter.changex(maincharacter.speed)
+        if menu:
+            if spacepress:
+                menu = False
+                spacepress = False
+                if not(muted):
+                    pygame.mixer.music.play(-1)
+                    pygame.mixer.music.set_volume(0.35)
+        else:
+            if mouseclick:
+                if playbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                    paused = False 
+                if pausebutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                    paused = True
+                if statsbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                    openstats = True
+                if statsexitbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
+                    openstats = False
+            if escape_keypress:
+                paused = not paused
+                escape_keypress = False
+            if ikey_keypress:
+                openstats = not openstats
+                ikey_keypress = False
+            if mkey_keypress:
+                muted = not muted
+                mkey_keypress = False
 
-            for objectrender in objectrenderlist:
-                if objectrender.offscreen():
-                    objectdeletelist.append(objectrender)
-                if objectrender.outofhealth():
-                    if (objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big") and objectrender.attacker != "neutralmeteor":
-                        scoreboard.value += 3
-                        scoreboard.dictionaryupdate()
-                        snakekc.value += 1
-                        snakekc.dictionaryupdate()
-                        maincharacter.updateexperience(objectrender.experience)
-                    elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon"  or objectrender.classtype == "enemyspider") and objectrender.attacker != "neutralmeteor":
-                        scoreboard.value += 1
-                        scoreboard.dictionaryupdate()
-                        if objectrender.classtype =="enemydragon":
-                            dragonkc.value += 1
-                            dragonkc.dictionaryupdate()
-                            maincharacter.updateexperience(objectrender.experience)
-                        elif(objectrender.classtype == "enemysnake"):
-                            snakekc.value +=1
+            if maincharacter.gethealth() > 0 and not (paused or openstats) and not (loading) and not (menu):
+                objectdeletelist=[]
+                if rArrow_keypress:
+                    maincharacter.changex(maincharacter.speed)
+                    if maincharacter.offscreen():
+                        maincharacter.changex(maincharacter.speed * -1)
+                if lArrow_keypress:
+                    maincharacter.changex(-maincharacter.speed)
+                    if maincharacter.offscreen():
+                        maincharacter.changex(maincharacter.speed)
+
+                for objectrender in objectrenderlist:
+                    if objectrender.offscreen():
+                        objectdeletelist.append(objectrender)
+                    if objectrender.outofhealth():
+                        if (objectrender.classtype == "enemysnake" and objectrender.getsnaketype() == "Big") and objectrender.attacker != "neutralmeteor":
+                            scoreboard.value += 3
+                            scoreboard.dictionaryupdate()
+                            snakekc.value += 1
                             snakekc.dictionaryupdate()
                             maincharacter.updateexperience(objectrender.experience)
-                    if objectrender.classtype != "enemywisp":
-                        music["kill_sfx"].play()
-                    objectdeletelist.append(objectrender)
-                if objectrender.classtype == "enemyghost":
-                    objectrender.frameupdate(objectrenderlist)
-                else:
-                    objectrender.frameupdate()
-                #TO DO: WARNING - FRAME UPDATE CHANGES RENDER LIST 
-                if "enemy" in objectrender.classtype:
-                    if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
-                        objectrender.losehealth(1,"weapon")
-                    if objectrender.checkcollision(maincharacter.getobjectbody()):
-                        maincharacter.losehealth(1,objectrender.classtype)
-                if objectrender.classtype =="healthpowerup":
-                    if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.health < maincharacter.healthcap:
+                        elif (objectrender.classtype == "enemysnake" or objectrender.classtype == "enemydragon"  or objectrender.classtype == "enemyspider") and objectrender.attacker != "neutralmeteor":
+                            scoreboard.value += 1
+                            scoreboard.dictionaryupdate()
+                            if objectrender.classtype =="enemydragon":
+                                dragonkc.value += 1
+                                dragonkc.dictionaryupdate()
+                                maincharacter.updateexperience(objectrender.experience)
+                            elif(objectrender.classtype == "enemysnake"):
+                                snakekc.value +=1
+                                snakekc.dictionaryupdate()
+                                maincharacter.updateexperience(objectrender.experience)
+                        if objectrender.classtype != "enemywisp":
+                            music["kill_sfx"].play()
                         objectdeletelist.append(objectrender)
-                        maincharacter.restorehealth()
-                if objectrender.classtype =="heartpowerup":
-                    if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.healthcap < 7:
-                        objectdeletelist.append(objectrender)
-                        maincharacter.healthcap += 1
-                if objectrender.classtype =="attackpowerup":
-                    if objectrender.checkcollision(maincharacter.getobjectbody()) and sword.attackbarcount < 3:
-                        objectdeletelist.append(objectrender)
-                        sword.attackbarcount +=1
-                if objectrender.classtype == "neutralmeteor":
-                    for otherobject in objectrenderlist:
-                        if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon" or otherobject.classtype == "enemyspider") 
-                            and objectrender.checkcollision(otherobject.getobjectbody())):
-                            otherobject.losehealth(otherobject.gethealth(),objectrender.classtype)  
-                    if objectrender.checkcollision(maincharacter.getobjectbody()):
-                        maincharacter.losehealth(3,"neutralmeteor")
-                    if objectrender.y >= GROUNDLEVEL - 40:
-                        explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion_spritesheet"]["dimensions"][0]/2),
-                                                    objectrender.y,
-                                                    pictures["explosion_spritesheet"]["dimensions"][0],
-                                                    pictures["explosion_spritesheet"]["dimensions"][1],
-                                                    "explosion_spritesheet", 
-                                                    explosioncoordinateslist)
-                        objectrenderlist.append(explosioneffect)
-                        objectdeletelist.append(objectrender)
-                if  "arrow" in objectrender.classtype:
-                    for otherobject in objectrenderlist:
-                        if "enemy" in otherobject.classtype:
-                            if objectrender.checkcollision(otherobject.getobjectbody()):
-                                if objectrender.classtype == "bigarrow":
-                                    otherobject.losehealth(2,"bigarrow")
-                                else:
-                                    otherobject.losehealth(1,"arrow")
-                                    objectdeletelist.append(objectrender)
+                    if objectrender.classtype == "enemyghost":
+                        objectrender.frameupdate(objectrenderlist)
+                    else:
+                        objectrender.frameupdate()
+                    #TO DO: WARNING - FRAME UPDATE CHANGES RENDER LIST 
+                    if "enemy" in objectrender.classtype:
+                        if objectrender.checkcollision(sword.getobjectbody()) and sword.getswingstate():
+                            objectrender.losehealth(1,"weapon")
+                        if objectrender.checkcollision(maincharacter.getobjectbody()):
+                            maincharacter.losehealth(1,objectrender.classtype)
+                    if objectrender.classtype =="healthpowerup":
+                        if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.health < maincharacter.healthcap:
+                            objectdeletelist.append(objectrender)
+                            maincharacter.restorehealth()
+                    if objectrender.classtype =="heartpowerup":
+                        if objectrender.checkcollision(maincharacter.getobjectbody()) and maincharacter.healthcap < 7:
+                            objectdeletelist.append(objectrender)
+                            maincharacter.healthcap += 1
+                    if objectrender.classtype =="attackpowerup":
+                        if objectrender.checkcollision(maincharacter.getobjectbody()) and sword.attackbarcount < 3:
+                            objectdeletelist.append(objectrender)
+                            sword.attackbarcount +=1
+                    if objectrender.classtype == "neutralmeteor":
+                        for otherobject in objectrenderlist:
+                            if ((otherobject.classtype == "enemysnake" or otherobject.classtype == "enemydragon" or otherobject.classtype == "enemyspider") 
+                                and objectrender.checkcollision(otherobject.getobjectbody())):
+                                otherobject.losehealth(otherobject.gethealth(),objectrender.classtype)  
+                        if objectrender.checkcollision(maincharacter.getobjectbody()):
+                            maincharacter.losehealth(3,"neutralmeteor")
+                        if objectrender.y >= GROUNDLEVEL - 40:
+                            explosioneffect = explosion(objectrender.x + (objectrender.width/2) - (pictures["explosion_spritesheet"]["dimensions"][0]/2),
+                                                        objectrender.y,
+                                                        pictures["explosion_spritesheet"]["dimensions"][0],
+                                                        pictures["explosion_spritesheet"]["dimensions"][1],
+                                                        "explosion_spritesheet", 
+                                                        explosioncoordinateslist)
+                            objectrenderlist.append(explosioneffect)
+                            objectdeletelist.append(objectrender)
+                    if  "arrow" in objectrender.classtype:
+                        for otherobject in objectrenderlist:
+                            if "enemy" in otherobject.classtype:
+                                if objectrender.checkcollision(otherobject.getobjectbody()):
+                                    if objectrender.classtype == "bigarrow":
+                                        otherobject.losehealth(2,"bigarrow")
+                                    else:
+                                        otherobject.losehealth(1,"arrow")
+                                        objectdeletelist.append(objectrender)
+                    if objectrender.classtype == "enemylaserbeam_spritesheet":
+                        laserbeamchannel.play(music["laserbeam_sfx"],2000)
+
+                if mouseclick:
+                    sword.setswingstate()
+                    mouseclick = False
+                    if sword.getweapontype() == "swordpic":
+                        music["swordswing_sfx"].play()
+                
+                if ekey_keypress:
+                    sword.setspecialattackstate()
+                    ekey_keypress = False
+
+                if spacepress and not(maincharacter.getjumpstate()):
+                    maincharacter.startjump()
+                    music["slimejump_sfx"].play()
+
+                if weaponswap:
+                    sword.toggleweapon()
+                    weaponswap = False
+
+                for objectrender in objectdeletelist:
+                    if (objectrender.classtype == "enemysnake" and 
+                        not(objectrender.getx() < -150) and random.randint(1,100) >= 75):
+                        power=powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["healthpowerup"]["dimensions"][0]/2),
+                                    objectrender.gety() + (objectrender.height - pictures["healthpowerup"]["dimensions"][1]),
+                                    pictures["healthpowerup"]["dimensions"][0],
+                                    pictures["healthpowerup"]["dimensions"][1],
+                                    "healthpowerup",
+                                    600)
+                        objectrenderlist.append(power)
+                    elif (objectrender.classtype == "enemydragon" and 
+                        not(objectrender.getx() < -150) and random.randint(1,100) >= 80):
+                        heartpotion = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["heartpowerup"]["dimensions"][0]/2),
+                                    objectrender.gety() + (objectrender.height - pictures["heartpowerup"]["dimensions"][1]),
+                                    pictures["heartpowerup"]["dimensions"][0],
+                                    pictures["heartpowerup"]["dimensions"][1],
+                                    "heartpowerup",
+                                    300)
+                        objectrenderlist.append(heartpotion)
+                    elif (objectrender.classtype == "enemywisp"  and 
+                        not(objectrender.getx() < -150) and random.randint(1,100) >= 66):
+                        bigarrowpowerup = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["attackpowerup"]["dimensions"][0]/2),
+                                    objectrender.gety() + (objectrender.height - pictures["attackpowerup"]["dimensions"][1]),
+                                    pictures["attackpowerup"]["dimensions"][0],
+                                    pictures["attackpowerup"]["dimensions"][1],
+                                    "attackpowerup",
+                                    300)
+                        objectrenderlist.append(bigarrowpowerup)
+                    elif (objectrender.classtype == "enemyghost"  and 
+                        not(objectrender.getx() < -150)):
+                            bossalive = False
+                    try:
+                        objectrenderlist.remove(objectrender)     
+                    except ValueError:
+                        print("Object Does Not Exist in List")
+                    except:
+                        print("Unknown Error")
+
+                spawnlist = worldlist[stage].frameupdate()
+                maincharacter.frameupdate()  
+                playerlevel.frameupdate(maincharacter.level)
+                statslevel.frameupdate(maincharacter.level)
+                sword.frameupdate(maincharacter.getposition(),objectrenderlist)
+
+                for classtype in spawnlist:
+                    generateobject(classtype,objectrenderlist)
             
-            if mouseclick:
-                sword.setswingstate()
-                mouseclick = False
-                if sword.getweapontype() == "swordpic":
-                    music["swordswing_sfx"].play()
+            if snakekc.value > 2 and stage == 0 :
+                if spawnboss:
+                    generateobject("enemyghost",objectrenderlist)
+                    ghostbosshpbar = displaybar(75,65,450,10,"bar",(150,0,0))
+                    spawnboss = False
             
-            if ekey_keypress:
-                sword.setspecialattackstate()
-                ekey_keypress = False
+            if scoreboard.value >= 10 and scoreboard.value < 20 and not (bossalive):
+                stage = 1
+                if stage != cstage:
+                    cstage = stage
+                    loading = True
+                    loadingtimer = 60
+                    objectrenderlist.clear()
+                    maincharacter.x = 0
+                    maincharacter.y = GROUNDLEVEL - 60
 
-            if spacepress and not(maincharacter.getjumpstate()):
-                maincharacter.startjump()
-                music["slimejump_sfx"].play()
-
-            if weaponswap:
-                sword.toggleweapon()
-                weaponswap = False
-
-            for objectrender in objectdeletelist:
-                if (objectrender.classtype == "enemysnake" and 
-                    not(objectrender.getx() < -150) and random.randint(1,100) >= 75):
-                    power=powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["healthpowerup"]["dimensions"][0]/2),
-                                  objectrender.gety() + (objectrender.height - pictures["healthpowerup"]["dimensions"][1]),
-                                  pictures["healthpowerup"]["dimensions"][0],
-                                  pictures["healthpowerup"]["dimensions"][1],
-                                  "healthpowerup",
-                                  600)
-                    objectrenderlist.append(power)
-                elif (objectrender.classtype == "enemydragon" and 
-                    not(objectrender.getx() < -150) and random.randint(1,100) >= 80):
-                    heartpotion = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["heartpowerup"]["dimensions"][0]/2),
-                                  objectrender.gety() + (objectrender.height - pictures["heartpowerup"]["dimensions"][1]),
-                                  pictures["heartpowerup"]["dimensions"][0],
-                                  pictures["heartpowerup"]["dimensions"][1],
-                                  "heartpowerup",
-                                  300)
-                    objectrenderlist.append(heartpotion)
-                elif (objectrender.classtype == "enemywisp"  and 
-                    not(objectrender.getx() < -150) and random.randint(1,100) >= 66):
-                    bigarrowpowerup = powerup(objectrender.getx() + objectrender.getwidth()/2 - (pictures["attackpowerup"]["dimensions"][0]/2),
-                                  objectrender.gety() + (objectrender.height - pictures["attackpowerup"]["dimensions"][1]),
-                                  pictures["attackpowerup"]["dimensions"][0],
-                                  pictures["attackpowerup"]["dimensions"][1],
-                                  "attackpowerup",
-                                  300)
-                    objectrenderlist.append(bigarrowpowerup)
-                elif (objectrender.classtype == "enemyghost"  and 
-                    not(objectrender.getx() < -150)):
-                        bossalive = False
-                try:
-                    objectrenderlist.remove(objectrender)     
-                except ValueError:
-                    print("Object Does Not Exist in List")
-                except:
-                    print("Unknown Error")
-
-            spawnlist = worldlist[stage].frameupdate()
-            maincharacter.frameupdate()  
-            playerlevel.frameupdate(maincharacter.level)
-            menulevel.frameupdate(maincharacter.level)
-            sword.frameupdate(maincharacter.getposition(),objectrenderlist)
-
-            for classtype in spawnlist:
-                generateobject(classtype,objectrenderlist)
-        
-        if snakekc.value > 2 and stage == 0 :
-            if spawnboss:
-                generateobject("enemyghost",objectrenderlist)
-                ghostbosshpbar = displaybar(75,65,450,10,"bar",(150,0,0))
-                spawnboss = False
-        
-        if scoreboard.value >= 10 and scoreboard.value < 20 and not (bossalive):
-            stage = 1
-            if stage != cstage:
-                cstage = stage
-                loading = True
-                loadingtimer = 60
-                objectrenderlist.clear()
-                maincharacter.x = 0
-                maincharacter.y = GROUNDLEVEL - 60
-
-        elif scoreboard.value >= 20 and not (bossalive):
-            stage = 2
-            if stage != cstage:
-                cstage = stage
-                loading = True
-                loadingtimer = 60
-                objectrenderlist.clear()
-                maincharacter.x = 0
-                maincharacter.y = GROUNDLEVEL - 60
-        
-        if loadingtimer > 0:
-            loadingtimer -= 1
-        else:
-            loading = False
+            elif scoreboard.value >= 20 and not (bossalive):
+                stage = 2
+                if stage != cstage:
+                    cstage = stage
+                    loading = True
+                    loadingtimer = 60
+                    objectrenderlist.clear()
+                    maincharacter.x = 0
+                    maincharacter.y = GROUNDLEVEL - 60
+            
+            if loadingtimer > 0:
+                loadingtimer -= 1
+            else:
+                loading = False
 
         #Rendering
-
-        worldlist[stage].drawobject(screen)
-
-        expbar.drawobject(screen,pictures,maincharacter.getexppercent())
-        screen.blit(pictures["openmenu"]["surface"],(25,300))
-        screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
-        screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
-        screen.blit(pictures["level_text"]["surface"],(435,295))
-        scoreboard.drawobject(screen,pictures)
-        playerlevel.drawobject(screen,pictures)
-        if paused == False:
-            screen.blit(pictures["pause"]["surface"],(pausebutton.x,pausebutton.y))
-        for x in range(maincharacter.gethealth()):
-            screen.blit(pictures["heart"]["surface"],(10+30*x,10))
-        for x in range(sword.attackbarcount):
-            screen.blit(pictures["attackbar"]["surface"],(10+30*x,40))
-        for x in range(maincharacter.getiframe()):
-            screen.blit(pictures["shield"]["surface"],maincharacter.getposition())
-        for objectrender in objectrenderlist:
-            if objectrender.classtype == "enemysnake":
-                screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
-                heartoffsets=0
-                for x in range(objectrender.gethealth()):
-                    if heartoffsets >= 0:
-                        heartoffsets = heartoffsets - x
-                    else:
-                        heartoffsets = heartoffsets + x
-                    if objectrender.gethealth()%2 == 1:
-                        screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
-                    else:
-                        screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
-            elif objectrender.classtype == "enemyghost":
-                ghostbosshpbar.drawobject(screen,pictures,objectrender.gethealthpercentage())
-                screen.blit(pictures["ghostboss_text"]["surface"],(190,40))
-                if (objectrender.blinking and 
-                   objectrender.blinkframe % 15 in range(1,6)):
-                    pictures["enemyghost"]["surface"].set_alpha(10)
-                else:
-                    pictures["enemyghost"]["surface"].set_alpha(255)
-             
-            screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
-        if paused:
-            screen.blit(pictures["grayfilter"]["surface"],(0,0))
-            screen.blit(pictures["play"]["surface"],(playbutton.x,playbutton.y))
-
-        if openmenu:
-            screen.blit(pictures["menu"]["surface"],(0,0))
-            screen.blit(pictures["exitmenu"]["surface"],(menuexitbutton.x,menuexitbutton.y))
-            for x in range(maincharacter.gethealth()):
-                screen.blit(pictures["heart"]["surface"],(130+30*x,80))
-            dragonkc.drawobject(screen,pictures)
-            snakekc.drawobject(screen,pictures)
-            menulevel.drawobject(screen,pictures)
+        if menu == False:
+            worldlist[stage].drawobject(screen)
         
-        if loading:
-            screen.blit(pictures["loadingscreen"]["surface"],(0,0))
+            expbar.drawobject(screen,pictures,maincharacter.getexppercent())
+            screen.blit(pictures["openstats"]["surface"],(25,300))
+            screen.blit(pictures[sword.getweapontype()]["surface"],(sword.getposition()))
+            screen.blit(pictures["slimepic"]["surface"],(maincharacter.getposition()))
+            screen.blit(pictures["level_text"]["surface"],(435,295))
+            scoreboard.drawobject(screen,pictures)
+            playerlevel.drawobject(screen,pictures)
+            if paused == False:
+                screen.blit(pictures["pause"]["surface"],(pausebutton.x,pausebutton.y))
+            for x in range(maincharacter.gethealth()):
+                screen.blit(pictures["heart"]["surface"],(10+30*x,10))
+            for x in range(sword.attackbarcount):
+                screen.blit(pictures["attackbar"]["surface"],(10+30*x,40))
+            for x in range(maincharacter.getiframe()):
+                screen.blit(pictures["shield"]["surface"],maincharacter.getposition())
+            for objectrender in objectrenderlist:
+                if objectrender.classtype == "enemysnake":
+                    screen.blit(pictures[objectrender.classtype]["surface"],objectrender.getposition())
+                    heartoffsets=0
+                    for x in range(objectrender.gethealth()):
+                        if heartoffsets >= 0:
+                            heartoffsets = heartoffsets - x
+                        else:
+                            heartoffsets = heartoffsets + x
+                        if objectrender.gethealth()%2 == 1:
+                            screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex()-25/2)+25*heartoffsets,objectrender.y-35))
+                        else:
+                            screen.blit(pictures["heart"]["surface"],((objectrender.getmiddlex())+25*heartoffsets,objectrender.y-35))
+                elif objectrender.classtype == "enemyghost":
+                    ghostbosshpbar.drawobject(screen,pictures,objectrender.gethealthpercentage())
+                    screen.blit(pictures["ghostboss_text"]["surface"],(190,40))
+                    if (objectrender.blinking and 
+                    objectrender.blinkframe % 15 in range(1,6)):
+                        pictures["enemyghost"]["surface"].set_alpha(10)
+                    else:
+                        pictures["enemyghost"]["surface"].set_alpha(255)
+                
+                screen.blit(pictures[objectrender.classtype]["surface"],(objectrender.getposition()),objectrender.getcoordinates())  
+            if paused:
+                screen.blit(pictures["grayfilter"]["surface"],(0,0))
+                screen.blit(pictures["play"]["surface"],(playbutton.x,playbutton.y))
 
-        if maincharacter.gethealth() <= 0:
-            screen.blit(pictures["grayfilter"]["surface"],(0,0))
+            if openstats:
+                screen.blit(pictures["stats"]["surface"],(0,0))
+                screen.blit(pictures["exitstats"]["surface"],(statsexitbutton.x,statsexitbutton.y))
+                for x in range(maincharacter.gethealth()):
+                    screen.blit(pictures["heart"]["surface"],(130+30*x,80))
+                dragonkc.drawobject(screen,pictures)
+                snakekc.drawobject(screen,pictures)
+                statslevel.drawobject(screen,pictures)
+            
+            if loading:
+                screen.blit(pictures["loadingscreen"]["surface"],(0,0))
+
+            if maincharacter.gethealth() <= 0:
+                screen.blit(pictures["grayfilter"]["surface"],(0,0))
+        else:
+            screen.blit(pictures["bgmenu"]["surface"],(0,0))
+
 
         #Timer
         pygame.display.flip()
