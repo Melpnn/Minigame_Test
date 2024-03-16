@@ -6,13 +6,16 @@ class weapon(drawunit):
         drawunit.__init__(self,x,y,width,height,classtype)
         self.swingstate = False
         self.specialstate = False
-        self.swingframe = 0
         self.attackbarcount = 0
         self.weaponoffsetx = 60
         self.weaponoffsety = -30
         self.weapontype = "swordpic"
     def setswingstate(self):
-        self.swingstate=True
+        if self.swingstate == False:
+            self.swingstate = True
+            return True
+        else:
+            return False
     def getswingstate(self):
         return self.swingstate
     def setspecialattackstate(self):

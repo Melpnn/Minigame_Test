@@ -26,9 +26,9 @@ def generateobject(classtype,objectrenderlist):
     if classtype == "enemysnake":
         snakehitpoint = 1
         snaketype = "Normal"
-        if random.randint(0,100) <= 30:
-            snakehitpoint = 5
-            snaketype = "Big"
+        # if random.randint(0,100) <= 30:
+        #     snakehitpoint = 5
+        #     snaketype = "Big"
         snake = snakeenemy(600,193,pictures["enemysnake"]["dimensions"][0],pictures["enemysnake"]["dimensions"][1],"enemysnake",snakehitpoint,snaketype,5)
         objectrenderlist.append(snake)
     elif classtype == "enemyspider":
@@ -48,6 +48,24 @@ def generateobject(classtype,objectrenderlist):
         objectrenderlist.append(bunny)
     else:
         print("Unkown Classtype " + classtype)
+
+def startingdata():
+    dArrow_keypress = False
+    rArrow_keypress = False
+    lArrow_keypress = False
+    uArrow_keypress = False
+    escape_keypress = False
+    ikey_keypress = False
+    ekey_keypress = False
+    mkey_keypress = False
+    mouseclick = False
+    spacepress = False
+    weaponswap = False
+    paused = False
+    openstats = False 
+    loading = False
+    muted = False
+    menu = True
 
 if __name__=="__main__":
     pygame.init()
@@ -222,23 +240,6 @@ if __name__=="__main__":
     pictures["stats"]["surface"].blit(pictures["snakekillcount_text"]["surface"],(305,50))
     pictures["stats"]["surface"].blit(pictures["dragonkillcount_text"]["surface"],(305,90))
 
-    dArrow_keypress = False
-    rArrow_keypress = False
-    lArrow_keypress = False
-    uArrow_keypress = False
-    escape_keypress = False
-    ikey_keypress = False
-    ekey_keypress = False
-    mkey_keypress = False
-    mouseclick = False
-    spacepress = False
-    weaponswap = False
-    paused = False
-    openstats = False 
-    loading = False
-    muted = False
-    menu = True
-
     #Loading Objects
     maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["dimensions"][0],pictures["slimepic"]["dimensions"][1],"slime",4)
     sword=weapon(0,0,pictures["swordpic"]["dimensions"][0],pictures["swordpic"]["dimensions"][1],"weapon")
@@ -269,6 +270,8 @@ if __name__=="__main__":
     for rows in range(2):
         for columns in range(5):
             explosioncoordinateslist.append((columns*60,rows*60,59,59))
+
+    startingdata()
     
     while True:
         for event in pygame.event.get():
@@ -320,28 +323,47 @@ if __name__=="__main__":
                 if not(muted):
                     pygame.mixer.music.play(-1)
                     pygame.mixer.music.set_volume(0.35)
+                    
         else:
             if mouseclick:
                 if playbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
                     paused = False 
+                    pygame.mixer.unpause()
+                    pygame.mixer.music.unpause()
                 if pausebutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
                     paused = True
+                    pygame.mixer.pause()
+                    pygame.mixer.music.pause()
                 if statsbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
                     openstats = True
+                    pygame.mixer.pause()
                 if statsexitbutton.checkcollision((mousetrack[0],mousetrack[1],1,1)):
                     openstats = False
+                    pygame.mixer.unpause()
             if escape_keypress:
                 paused = not paused
+                if paused:
+                    pygame.mixer.pause() 
+                    pygame.mixer.music.pause()
+                else:
+                    pygame.mixer.unpause()
+                    pygame.mixer.music.unpause()
                 escape_keypress = False
             if ikey_keypress:
                 openstats = not openstats
                 ikey_keypress = False
+                if paused:
+                    pygame.mixer.pause() 
+                else:
+                    pygame.mixer.unpause()
             if mkey_keypress:
                 muted = not muted
                 mkey_keypress = False
 
             if maincharacter.gethealth() > 0 and not (paused or openstats) and not (loading) and not (menu):
+
                 objectdeletelist=[]
+
                 if rArrow_keypress:
                     maincharacter.changex(maincharacter.speed)
                     if maincharacter.offscreen():
@@ -376,7 +398,7 @@ if __name__=="__main__":
                             music["kill_sfx"].play()
                         objectdeletelist.append(objectrender)
                     if objectrender.classtype == "enemyghost":
-                        objectrender.frameupdate(objectrenderlist)
+                        objectrender.frameupdate(objectrenderlist,laserbeamchannel,music)
                     else:
                         objectrender.frameupdate()
                     #TO DO: WARNING - FRAME UPDATE CHANGES RENDER LIST 
@@ -422,14 +444,12 @@ if __name__=="__main__":
                                     else:
                                         otherobject.losehealth(1,"arrow")
                                         objectdeletelist.append(objectrender)
-                    if objectrender.classtype == "enemylaserbeam_spritesheet":
-                        laserbeamchannel.play(music["laserbeam_sfx"],2000)
+            
 
                 if mouseclick:
-                    sword.setswingstate()
-                    mouseclick = False
-                    if sword.getweapontype() == "swordpic":
+                    if sword.setswingstate() and sword.getweapontype() == "swordpic":
                         music["swordswing_sfx"].play()
+                    mouseclick = False
                 
                 if ekey_keypress:
                     sword.setspecialattackstate()
@@ -489,6 +509,8 @@ if __name__=="__main__":
 
                 for classtype in spawnlist:
                     generateobject(classtype,objectrenderlist)
+            elif maincharacter.gethealth() <= 0 :
+                menu = True
             
             if snakekc.value > 2 and stage == 0 :
                 if spawnboss:
@@ -579,8 +601,6 @@ if __name__=="__main__":
             if loading:
                 screen.blit(pictures["loadingscreen"]["surface"],(0,0))
 
-            if maincharacter.gethealth() <= 0:
-                screen.blit(pictures["grayfilter"]["surface"],(0,0))
         else:
             screen.blit(pictures["bgmenu"]["surface"],(0,0))
 

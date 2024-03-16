@@ -26,7 +26,7 @@ class ghostenemy(combatant):
             return True
         else:
             return False
-    def frameupdate(self,objectrenderlist):
+    def frameupdate(self,objectrenderlist,channel,music):
         combatant.frameupdate(self)
         self.attackposition()
         if self.blinking:
@@ -36,6 +36,7 @@ class ghostenemy(combatant):
                 self.blinkframe = 0
                 laserbeam = laserbeamenemy(self.x - 600,self.y - 30,636,145,"enemylaserbeam_spritesheet",0,9999,self.lasercoordinateslist)
                 objectrenderlist.append(laserbeam)                   
+                channel.play(music["laserbeam_sfx"],2000) 
         if self.lockedstate:
             self.lockframe += 1
             if self.lockframe >= 120:
