@@ -7,7 +7,8 @@ class meteors(drawunit):
         drawunit.__init__(self,x,y,width,height,classtype)
         self.angle = random.randint(240,300)
         self.speed = 1
-    def frameupdate(self):
+    def frameupdate(self,channel,music):
         self.speed += 1/60 * self.speed
         self.x += self.speed * math.cos(math.radians(self.angle))
         self.y += self.speed * -1 * math.sin(math.radians(self.angle))
+        channel.play(music["explosion_sfx"]) 

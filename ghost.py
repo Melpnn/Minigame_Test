@@ -35,8 +35,8 @@ class ghostenemy(combatant):
                 self.blinking = False
                 self.blinkframe = 0
                 laserbeam = laserbeamenemy(self.x - 600,self.y - 30,636,145,"enemylaserbeam_spritesheet",0,9999,self.lasercoordinateslist)
-                objectrenderlist.append(laserbeam)                   
-                channel.play(music["laserbeam_sfx"],2000) 
+                objectrenderlist.append(laserbeam)               
+                channel.play(music["laserbeam_sfx"],0,2000) 
         if self.lockedstate:
             self.lockframe += 1
             if self.lockframe >= 120:

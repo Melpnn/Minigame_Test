@@ -34,7 +34,7 @@ class weapon(drawunit):
             self.weapontype = bow 
         else:
             self.weapontype = sword
-    def frameupdate(self,slimeposition,arrowslist):
+    def frameupdate(self,slimeposition,arrowslist,channel,music):
         self.x = slimeposition[0] + self.weaponoffsetx
         self.y = slimeposition[1] + self.weaponoffsety
         if self.weapontype == "swordpic" and self.swingstate:
@@ -51,6 +51,7 @@ class weapon(drawunit):
                 self.swingstate = False
                 arrow = arrows(self.x,self.getmiddley()-5,30,10,"arrow")
                 arrowslist.append(arrow)
+                channel.play(music["arrow_sfx"])
         elif self.weapontype == "bowpic" and self.specialstate:
             self.weaponoffsetx -= 0.33
             if self.weaponoffsetx <= 50:
@@ -59,4 +60,5 @@ class weapon(drawunit):
                 self.specialstate = False
                 arrow = arrows(self.x,self.getmiddley()-15,50,30,"bigarrow")
                 arrowslist.append(arrow)
+                channel.play(music["arrow_sfx"])
             

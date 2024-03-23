@@ -49,24 +49,6 @@ def generateobject(classtype,objectrenderlist):
     else:
         print("Unkown Classtype " + classtype)
 
-def startingdata():
-    dArrow_keypress = False
-    rArrow_keypress = False
-    lArrow_keypress = False
-    uArrow_keypress = False
-    escape_keypress = False
-    ikey_keypress = False
-    ekey_keypress = False
-    mkey_keypress = False
-    mouseclick = False
-    spacepress = False
-    weaponswap = False
-    paused = False
-    openstats = False 
-    loading = False
-    muted = False
-    menu = True
-
 if __name__=="__main__":
     pygame.init()
     screen = pygame.display.set_mode((BGWIDTH,BGHEIGHT))
@@ -232,6 +214,8 @@ if __name__=="__main__":
             music[sound].set_volume(0.4)
 
     laserbeamchannel = pygame.mixer.Channel(0)
+    arrowchannel = pygame.mixer.Channel(1)
+    meteorchannel = pygame.mixer.Channel(2)
 
     pictures["stats"]["surface"].blit(pictures["slime_name_text"]["surface"],(10,10))
     pictures["stats"]["surface"].blit(pictures["health_text"]["surface"],(5,70))
@@ -260,6 +244,7 @@ if __name__=="__main__":
     leveltwo = worldlevel(["enemydragon","enemysnake","neutralmeteor","enemyspider"],[(180,420),(120,360),(180,300),(60,180)],pictures["bgdesert"]["surface"]) 
     levelthree = worldlevel(["enemysnake","neutralmeteor"],[(120,360),(180,300)],pictures["bgice"]["surface"]) 
     worldlist = [levelone,leveltwo,levelthree]
+    #CStage is Current Stage, used to ensure the loading screen code is only run once 
     stage = 0
     cstage = 0
     loadingtimer = 0
@@ -271,7 +256,22 @@ if __name__=="__main__":
         for columns in range(5):
             explosioncoordinateslist.append((columns*60,rows*60,59,59))
 
-    startingdata()
+    dArrow_keypress = False
+    rArrow_keypress = False
+    lArrow_keypress = False
+    uArrow_keypress = False
+    escape_keypress = False
+    ikey_keypress = False
+    ekey_keypress = False
+    mkey_keypress = False
+    mouseclick = False
+    spacepress = False
+    weaponswap = False
+    paused = False
+    openstats = False 
+    loading = False
+    muted = False
+    menu = True
     
     while True:
         for event in pygame.event.get():
@@ -399,6 +399,8 @@ if __name__=="__main__":
                         objectdeletelist.append(objectrender)
                     if objectrender.classtype == "enemyghost":
                         objectrender.frameupdate(objectrenderlist,laserbeamchannel,music)
+                    elif objectrender.classtype == "neutralmeteor":
+                        objectrender.frameupdate(meteorchannel,music)
                     else:
                         objectrender.frameupdate()
                     #TO DO: WARNING - FRAME UPDATE CHANGES RENDER LIST 
@@ -505,13 +507,44 @@ if __name__=="__main__":
                 maincharacter.frameupdate()  
                 playerlevel.frameupdate(maincharacter.level)
                 statslevel.frameupdate(maincharacter.level)
-                sword.frameupdate(maincharacter.getposition(),objectrenderlist)
+                sword.frameupdate(maincharacter.getposition(),objectrenderlist,arrowchannel,music)
 
                 for classtype in spawnlist:
                     generateobject(classtype,objectrenderlist)
             elif maincharacter.gethealth() <= 0 :
+                dArrow_keypress = False
+                rArrow_keypress = False
+                lArrow_keypress = False
+                uArrow_keypress = False
+                escape_keypress = False
+                ikey_keypress = False
+                ekey_keypress = False
+                mkey_keypress = False
+                mouseclick = False
+                spacepress = False
+                weaponswap = False
+                paused = False
+                openstats = False 
+                loading = False
+                muted = False
                 menu = True
-            
+
+                stage = 0
+                cstage = 0
+                loadingtimer = 0
+                spawnboss = True
+                bossalive = True
+
+                objectrenderlist.clear()
+                maincharacter=slime(0,(GROUNDLEVEL - 60),pictures["slimepic"]["dimensions"][0],pictures["slimepic"]["dimensions"][1],"slime",4)
+                sword=weapon(0,0,pictures["swordpic"]["dimensions"][0],pictures["swordpic"]["dimensions"][1],"weapon")
+                scoreboard = threedigittextbox(420,0,180,60,"textbox",0)
+                dragonkc =  threedigittextbox(445,90,120,40,"textbox",0)
+                snakekc = threedigittextbox(445,50,120,40,"textbox",0)
+
+                pygame.mixer.stop()
+                pygame.mixer.music.stop()
+                
             if snakekc.value > 2 and stage == 0 :
                 if spawnboss:
                     generateobject("enemyghost",objectrenderlist)
@@ -608,5 +641,3 @@ if __name__=="__main__":
         #Timer
         pygame.display.flip()
         clock.tick(60)
-
-    
